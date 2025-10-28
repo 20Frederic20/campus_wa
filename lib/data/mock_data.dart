@@ -8,6 +8,9 @@ final List<University> universities = [
     slug: 'universite-abomey-calavi',
     lng: 2.3408,
     lat: 6.4444,
+    imageUrls: [
+      'https://commons.wikimedia.org/wiki/Category:Universit%C3%A9_d%27Abomey-Calavi',
+    ],
     classrooms: [
       Classroom(
         id: '1',
@@ -39,6 +42,9 @@ final List<University> universities = [
     slug: 'hecm-godomey',
     lng: 2.3689,
     lat: 6.3843,
+    imageUrls: [
+      'https://commons.wikimedia.org/wiki/Category:Universit%C3%A9_d%27Abomey-Calavi',
+    ],
     classrooms: [
       Classroom(
         id: '4',
@@ -63,6 +69,9 @@ final List<University> universities = [
     slug: 'esgis-calavi',
     lng: 2.3734,
     lat: 6.4327,
+    imageUrls: [
+      'https://commons.wikimedia.org/wiki/Category:Universit%C3%A9_d%27Abomey-Calavi',
+    ],
     classrooms: [
       Classroom(
         id: '6',
@@ -87,6 +96,9 @@ final List<University> universities = [
     slug: 'iupa-akassato',
     lng: 2.3390,
     lat: 6.4720,
+    imageUrls: [
+      'https://commons.wikimedia.org/wiki/Category:Universit%C3%A9_d%27Abomey-Calavi',
+    ],
     classrooms: [
       Classroom(
         id: '8',
@@ -111,6 +123,9 @@ final List<University> universities = [
     slug: 'upi-onipko',
     lng: 2.3522,
     lat: 6.4110,
+    imageUrls: [
+      'https://commons.wikimedia.org/wiki/Category:Universit%C3%A9_d%27Abomey-Calavi',
+    ],
     classrooms: [
       Classroom(
         id: '10',
