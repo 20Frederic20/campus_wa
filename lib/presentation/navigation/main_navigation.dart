@@ -1,3 +1,4 @@
+import 'package:campus_wa/presentation/screens/welcome.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
@@ -11,6 +12,10 @@ final GoRouter router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
+          builder: (context, state) => const WelcomeScreen(),
+        ),
+        GoRoute(
+          path: '/home',
           builder: (context, state) => const HomeScreen(),
         ),
         GoRoute(
@@ -38,9 +43,11 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWelcomeScreen = GoRouterState.of(context).uri.path == '/';
+    
     return Scaffold(
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: isWelcomeScreen ? null : BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Recherche"),
@@ -54,14 +61,23 @@ class MainScaffold extends StatelessWidget {
 
   static int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/universities') || location.startsWith('/classrooms')) return 0;
-    if (location == '/search') return 1;
-    return 0;
+    if (location == '/home') return 0;  // Onglet Accueil
+    if (location == '/search') return 1; // Onglet Recherche
+    if (location == '/favorites') return 2; // Onglet Favoris
+    return 0; // Par défaut, premier onglet
   }
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == 0) context.go('/');
-    if (index == 1) context.go('/search'); // À implémenter
-    if (index == 2) context.go('/favorites'); // V2
+    switch (index) {
+      case 0:
+        context.go('/home');  // Accueil
+        break;
+      case 1:
+        context.go('/search'); // Recherche
+        break;
+      case 2:
+        context.go('/favorites'); // Favoris
+        break;
+    }
   }
 }
