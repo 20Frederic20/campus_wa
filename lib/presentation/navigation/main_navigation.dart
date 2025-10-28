@@ -1,4 +1,5 @@
-import 'package:campus_wa/presentation/screens/welcome.dart';
+import 'package:campus_wa/presentation/screens/not_found_screen.dart';
+import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
@@ -6,6 +7,7 @@ import '../screens/university_detail_screen.dart';
 import '../screens/classroom_detail_screen.dart';
 
 final GoRouter router = GoRouter(
+  errorBuilder: (context, state) => const NotFoundScreen(),
   routes: [
     ShellRoute(
       builder: (context, state, child) => MainScaffold(child: child),
