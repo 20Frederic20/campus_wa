@@ -18,7 +18,7 @@ class UniversityDetailScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text(univ.nom)),
+      appBar: AppBar(title: Text(univ.name)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

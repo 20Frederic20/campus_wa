@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final filtered = universities.where((u) =>
-        u.nom.toLowerCase().contains(searchQuery.toLowerCase()) ||
+        u.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
         u.slug.toLowerCase().contains(searchQuery.toLowerCase())
     ).toList();
 

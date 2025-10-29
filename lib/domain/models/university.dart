@@ -2,7 +2,7 @@ import 'classroom.dart';
 
 class University {
   final String id;
-  final String nom;
+  final String name;
   final String slug;
   final double lng;
   final double lat;
@@ -11,7 +11,7 @@ class University {
 
   University({
     required this.id,
-    required this.nom,
+    required this.name,
     required this.slug,
     required this.lng,
     required this.lat,

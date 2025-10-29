@@ -4,7 +4,7 @@ import 'package:campus_wa/domain/models/university.dart';
 final List<University> universities = [
   University(
     id: '1',
-    nom: 'Université d’Abomey-Calavi (UAC)',
+    name: 'Université d’Abomey-Calavi (UAC)',
     slug: 'universite-abomey-calavi',
     lng: 2.3408,
     lat: 6.4444,
@@ -38,7 +38,7 @@ final List<University> universities = [
 
   University(
     id: '2',
-    nom: 'HECM Godomey',
+    name: 'HECM Godomey',
     slug: 'hecm-godomey',
     lng: 2.3689,
     lat: 6.3843,
@@ -65,7 +65,7 @@ final List<University> universities = [
 
   University(
     id: '3',
-    nom: 'École Supérieure de Gestion (ESGIS Calavi)',
+    name: 'École Supérieure de Gestion (ESGIS Calavi)',
     slug: 'esgis-calavi',
     lng: 2.3734,
     lat: 6.4327,
@@ -92,7 +92,7 @@ final List<University> universities = [
 
   University(
     id: '4',
-    nom: 'Institut Universitaire Pan-Africain (IUPA)',
+    name: 'Institut Universitaire Pan-Africain (IUPA)',
     slug: 'iupa-akassato',
     lng: 2.3390,
     lat: 6.4720,
@@ -119,7 +119,7 @@ final List<University> universities = [
 
   University(
     id: '5',
-    nom: 'Université Polytechnique Internationale (UPI Onipko)',
+    name: 'Université Polytechnique Internationale (UPI Onipko)',
     slug: 'upi-onipko',
     lng: 2.3522,
     lat: 6.4110,

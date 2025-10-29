@@ -13,7 +13,7 @@ class UniversityCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
         onTap: onTap,
-        title: Text(university.nom, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(university.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(university.slug),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       ),

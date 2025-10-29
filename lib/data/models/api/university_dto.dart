@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../../domain/models/university.dart';
+import 'package:campus_wa/domain/models/university.dart';
 
 part 'university_dto.g.dart';
 
 @JsonSerializable()
 class UniversityDto {
   final String id;
-  final String nom;
+  final String name;
   final String slug;
   final double lng;
   final double lat;
@@ -14,7 +14,7 @@ class UniversityDto {
 
   UniversityDto({
     required this.id,
-    required this.nom,
+    required this.name,
     required this.slug,
     required this.lng,
     required this.lat,
@@ -25,7 +25,7 @@ class UniversityDto {
   University toDomain() {
     return University(
       id: id,
-      nom: nom,
+      name: name,
       slug: slug,
       lng: lng,
       lat: lat,
