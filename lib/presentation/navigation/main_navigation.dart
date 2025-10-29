@@ -6,6 +6,7 @@ import '../screens/home_screen.dart';
 import '../screens/university_detail_screen.dart';
 import '../screens/classroom_detail_screen.dart';
 import '../screens/under_development_screen.dart';
+import '../screens/university_classrooms_screen.dart';
 
 /// Configuration principale du router avec GoRouter
 final GoRouter router = GoRouter(
@@ -34,6 +35,13 @@ final GoRouter router = GoRouter(
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return ClassroomDetailScreen(classroomId: id);
+          },
+        ),
+        GoRoute(
+          path: '/universities/:id/classrooms',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return UniversityClassroomsScreen(universityId: id);
           },
         ),
         GoRoute(

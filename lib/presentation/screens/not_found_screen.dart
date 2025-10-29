@@ -24,7 +24,14 @@ class NotFoundScreen extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => context.go('/home'),
-              child: const Text('Retour à l\'accueil'),
+              child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.home),
+                SizedBox(width: 8),
+                Text('Accueil'),
+              ],
+              ),
             ),
           ],
         ),

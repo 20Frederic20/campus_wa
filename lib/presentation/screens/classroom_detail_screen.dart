@@ -45,7 +45,7 @@ class ClassroomDetailScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => context.pop(),
               icon: const Icon(Icons.arrow_back),
-              label: const Text("Retour à l'université"),
+              label: const Text("Retour"),
             ),
           ],
         ),

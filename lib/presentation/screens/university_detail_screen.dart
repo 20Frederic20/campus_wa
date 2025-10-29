@@ -62,34 +62,20 @@ class UniversityDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // === Liste des amphithéâtres ===
-            Text(
-              "Amphithéâtres (${univ.classrooms.length})",
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const Divider(height: 32),
-
-            // Liste des classrooms
-            Column(
-              children: univ.classrooms.map(
-                (classroom) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: ListTile(
-                      leading: const Icon(Icons.meeting_room, color: Colors.red),
-                      title: Text(
-                        classroom.nom,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(classroom.slug),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () => context.push('/classrooms/${classroom.id}'),
-                    ),
-                  ),
+            // === Résumé des amphithéâtres ===
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: const Icon(Icons.meeting_room, color: Colors.red),
+                title: Text(
+                  "Amphithéâtres",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
-              ).toList(),
+                subtitle: Text("${univ.classrooms.length} amphithéâtres disponibles"),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => context.push('/universities/${univ.id}/classrooms'),
+              ),
             ),
             const SizedBox(height: 16),
           ],
