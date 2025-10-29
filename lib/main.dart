@@ -7,6 +7,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
+    debugPrint("Fichier .env chargé avec succès.");
   } catch (e) {
     debugPrint("Erreur lors du chargement du fichier .env: $e");
     // Continue l'exécution même si le .env n'est pas chargé
