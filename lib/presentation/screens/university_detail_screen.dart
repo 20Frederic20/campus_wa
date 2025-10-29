@@ -4,7 +4,6 @@ import 'package:campus_wa/data/mock_data.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
-import 'package:campus_wa/presentation/widgets/image_display_widget.dart';
 
 
 class UniversityDetailScreen extends StatelessWidget {
@@ -25,14 +24,14 @@ class UniversityDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // === Images ===
-            if (univ.imageUrls != null && univ.imageUrls!.isNotEmpty)
-              ImagesDisplayWidget(
-                imageUrls: univ.imageUrls!,
-                enableCarousel: true,
-                allowMultipleImages: true,
-                height: 200, // taille fixe
-              ),
-            const SizedBox(height: 16),
+            // if (univ.imageUrls != null && univ.imageUrls!.isNotEmpty)
+            //   ImagesDisplayWidget(
+            //     imageUrls: univ.imageUrls!,
+            //     enableCarousel: true,
+            //     allowMultipleImages: true,
+            //     height: 200, // taille fixe
+            //   ),
+            // const SizedBox(height: 16),
 
             // === Infos textuelles ===
             Text(
