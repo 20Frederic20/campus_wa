@@ -5,7 +5,12 @@ import 'presentation/navigation/main_navigation.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env"); // charge le .env avant de démarrer l'app
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Erreur lors du chargement du fichier .env: $e");
+    // Continue l'exécution même si le .env n'est pas chargé
+  }
   runApp(const MyApp());
 }
 
