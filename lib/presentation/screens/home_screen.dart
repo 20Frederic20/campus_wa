@@ -17,7 +17,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _universities = _universityRepository.getUniversities();
+    _loadUniversities();
+  }
+
+  Future<void> _loadUniversities() {
+    setState(() {
+      _universities = _universityRepository.getUniversities();
+    });
+    return _universities.catchError((error) {
+      // Error will be handled by FutureBuilder
+      print(error);
+      return [];
+    });
   }
 
   @override
@@ -35,14 +46,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text(
-                'Erreur de chargement: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Erreur de chargement: ${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Réessayer'),
+                    onPressed: _loadUniversities,
+                  ),
+                ],
               ),
             );
           }
 
-          final universities = snapshot.data!;
+          final universities = snapshot.data ?? [];
+          
+          if (universities.isEmpty) {
+            return const Center(
+              child: Text('Aucune université trouvée'),
+            );
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
