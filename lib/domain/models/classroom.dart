@@ -1,17 +1,32 @@
-class Classroom {
+import 'package:equatable/equatable.dart';
+
+class Classroom extends Equatable {
   final String id;
   final String nom;
   final String slug;
-  final double lng;
-  final double lat ;
-  final List<String>? imageUrls;
+  final String lng;
+  final String lat ;
+  final String mainImage;
+  final List<String> annexesImages;
 
-  Classroom({
+  const Classroom({
     required this.id,
     required this.nom,
     required this.slug,
-    required this.lng,
-    required this.lat,
-    this.imageUrls,
+    this.lng = '',
+    this.lat = '',
+    this.mainImage = '',
+    this.annexesImages = const [],
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    nom,
+    slug,
+    lng,
+    lat,
+    mainImage,
+    annexesImages,
+  ];
 }
