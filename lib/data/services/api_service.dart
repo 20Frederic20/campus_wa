@@ -31,13 +31,54 @@ class ApiService {
         PrettyDioLogger(
           requestHeader: true,
           requestBody: true,
-          responseHeader: false,
+          responseHeader: true,  // Ajout des headers de réponse
           responseBody: true,
           error: true,
-          compact: true,
+          compact: false,        // Format plus détaillé
+          maxWidth: 90,         // Largeur maximale du log
+          logPrint: (obj) {     // Personnalisation de l'affichage
+            debugPrint('🌐 API Call: $obj');
+          },
+        ),
+      );
+
+      // Ajout d'un intercepteur personnalisé pour plus de détails
+      _dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            debugPrint('📤 Sending request to: ${options.uri}');
+            return handler.next(options);
+          },
+          onResponse: (response, handler) {
+            debugPrint('📥 Response received from: ${response.requestOptions.uri}');
+            debugPrint('⏱️ Response time: ${response.requestOptions.extra['timeStamp']}');
+            return handler.next(response);
+          },
+          onError: (error, handler) {
+            debugPrint('❌ Error on: ${error.requestOptions.uri}');
+            debugPrint('❌ Error message: ${error.message}');
+            return handler.next(error);
+          },
         ),
       );
     }
+
+    // Ajout d'un intercepteur pour mesurer le temps de réponse
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          options.extra['timeStamp'] = DateTime.now();
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          final startTime = response.requestOptions.extra['timeStamp'] as DateTime;
+          final endTime = DateTime.now();
+          final duration = endTime.difference(startTime);
+          response.requestOptions.extra['timeStamp'] = '${duration.inMilliseconds}ms';
+          return handler.next(response);
+        },
+      ),
+    );
 
     // Gestion des erreurs globales
     _dio.interceptors.add(
