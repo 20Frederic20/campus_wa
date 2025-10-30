@@ -1,26 +1,39 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/core/exceptions/api_exception.dart';
 
 part 'university_dto.g.dart';
 
 @JsonSerializable()
 class UniversityDto {
-  final String id;
-  final String name;
-  final String slug;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey()
+  final String? id;
+  @JsonKey()
+  final String? name;
+  @JsonKey()
+  final String? slug;
+  @JsonKey(name: 'created_at')
+  final String? createdAtString;
+  @JsonKey(name: 'updated_at')
+  final String? updatedAtString;
+  @JsonKey()
   final String? description;
+  @JsonKey()
   final String? lng;
+  @JsonKey()
   final String? lat;
+  @JsonKey()
   final String? address;
+  
+  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
+  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
 
   UniversityDto({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.name,
+    this.slug,
+    this.createdAtString,
+    this.updatedAtString,
     this.description,
     this.lng,
     this.lat,
@@ -29,23 +42,38 @@ class UniversityDto {
 
   // Convertir le DTO en modèle de domaine
   University toDomain() {
+    if (id == null || name == null || slug == null) {
+      throw ApiException(message: 'Missing required fields in University data');
+    }
+    
+    final createdAt = this.createdAt ?? DateTime.now();
+    final updatedAt = this.updatedAt ?? DateTime.now();
+    
     return University(
-      id: id,
-      name: name,
-      slug: slug,
+      id: id!,
+      name: name!,
+      slug: slug!,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      description: description,
-      lng: lng,
-      lat: lat,
-      address: address,
-      classrooms: [], // Les salles de classe peuvent être chargées séparément
+      description: description ?? '',
+      lng: lng ?? '',
+      lat: lat ?? '',
+      address: address ?? '',
+      classrooms: const [], // Les salles de classe peuvent être chargées séparément
     );
   }
 
   // Désérialisation JSON
-  factory UniversityDto.fromJson(Map<String, dynamic> json) =>
-      _$UniversityDtoFromJson(json);
+  factory UniversityDto.fromJson(Map<String, dynamic> json) {
+    try {
+      return _$UniversityDtoFromJson(json);
+    } catch (e, stackTrace) {
+      print('Error parsing UniversityDto: $e');
+      print('Stack trace: $stackTrace');
+      print('JSON data: $json');
+      rethrow;
+    }
+  }
 
   // Sérialisation JSON
   Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
