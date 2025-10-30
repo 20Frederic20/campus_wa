@@ -1,3 +1,4 @@
+import 'package:campus_wa/main.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,12 +9,10 @@ import 'package:campus_wa/domain/models/university.dart';
 
 class UniversityDetailScreen extends StatefulWidget {
   final String universityId;
-  final UniversityRepository universityRepository;
 
   const UniversityDetailScreen({
     super.key,
     required this.universityId,
-    required this.universityRepository,
   });
 
   @override
@@ -31,7 +30,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
 
   Future<void> _loadUniversity() {
     setState(() {
-      _universityFuture = widget.universityRepository
+      _universityFuture = getIt<UniversityRepository>()
           .getUniversityById(widget.universityId)
           .then((university) {
         // S'assurer que l'université est valide

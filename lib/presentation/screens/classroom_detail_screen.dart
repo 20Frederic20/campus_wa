@@ -11,7 +11,7 @@ class ClassroomDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final classroom = universities
-        .expand((u) => u.classrooms?.toList() ?? [] )
+        .expand((u) => u.classrooms.toList() ?? [] )
         .firstWhere((a) => a.id == classroomId);
 
     return Scaffold(

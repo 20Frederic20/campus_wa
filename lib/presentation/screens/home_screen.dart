@@ -1,3 +1,4 @@
+import 'package:campus_wa/main.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/domain/models/university.dart';
@@ -12,12 +13,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final UniversityRepository universityRepository = UniversityRepositoryImpl();
+  late final UniversityRepository universityRepository;
   late Future<List<University>> _universities;
 
   @override
   void initState() {
     super.initState();
+    universityRepository = getIt<UniversityRepository>();
     _loadUniversities();
   }
 

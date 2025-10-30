@@ -10,8 +10,11 @@ import 'package:campus_wa/domain/models/classroom.dart';
 
 
 class UniversityRepositoryImpl implements UniversityRepository {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
   final Map<String, University> _cache = {};
+
+  UniversityRepositoryImpl({required ApiService apiService})
+    : _apiService = apiService;
 
   @override
   Future<List<University>> getUniversities() async {

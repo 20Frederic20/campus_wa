@@ -1,4 +1,5 @@
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
@@ -28,10 +29,8 @@ final GoRouter router = GoRouter(
           path: '/universities/:id',
           builder: (context, state) {
             final universityId = state.pathParameters['id']!;
-            final repository = state.extra as UniversityRepository;
             return UniversityDetailScreen(
               universityId: universityId,
-              universityRepository: repository,
             );
           },
         ),
@@ -43,10 +42,14 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/universities/:id/classrooms',
+          path: '/universities/:universityId/classrooms',
           builder: (context, state) {
-            final id = state.pathParameters['id']!;
-            return UniversityClassroomsScreen(universityId: id);
+            final universityId = state.pathParameters['universityId']!;
+            final universityName = state.extra as String? ?? 'l\'université';
+            return UniversityClassroomsScreen(
+              universityId: universityId,
+              universityName: universityName,
+            );
           },
         ),
         GoRoute(
