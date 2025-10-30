@@ -1,6 +1,5 @@
 import 'package:campus_wa/main.dart';
 import 'package:flutter/material.dart';
-import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
@@ -90,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => context.push(
                     '/universities/${university.id}',
-                    extra: universityRepository,
                   ),
                 ),
               );

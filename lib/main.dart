@@ -1,5 +1,7 @@
 import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/data/repositories/claassroom_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/theme/app_theme.dart';
@@ -37,6 +39,9 @@ Future<void> setupDependencies() async {
     ..registerSingleton<ApiService>(ApiService())
     ..registerLazySingleton<UniversityRepository>(
       () => UniversityRepositoryImpl(apiService: getIt<ApiService>()),
+    )
+    ..registerLazySingleton<ClassroomRepository>(
+      () => ClassroomRepositoryImpl(apiService: getIt<ApiService>()),
     );
 }
 

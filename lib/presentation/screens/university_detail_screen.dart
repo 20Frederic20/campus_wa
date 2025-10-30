@@ -93,8 +93,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
   }
 
   Widget _buildContent(BuildContext context, University university) {
-    final hasValidCoords = university.lng != null &&
-                         university.lat.isNotEmpty && 
+    final hasValidCoords = university.lat.isNotEmpty && 
                          university.lng.isNotEmpty;
 
     final coords = hasValidCoords 
@@ -126,7 +125,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: LeafletMapWidget(
                   center: coords,
-                  zoom: hasValidCoords ? 14 : 2,
+                  zoom: hasValidCoords ? 12 : 2,
                   markers: hasValidCoords
                       ? [
                           Marker(
@@ -159,7 +158,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     _buildInfoRow(Icons.link, 'Slug', university.slug),
-                    if (university.description.isNotEmpty ?? false)
+                    if (university.description.isNotEmpty)
                       _buildInfoRow(
                         Icons.description,
                         'Description',

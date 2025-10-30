@@ -38,7 +38,9 @@ final GoRouter router = GoRouter(
           path: '/classrooms/:id',
           builder: (context, state) {
             final id = state.pathParameters['id']!;
-            return ClassroomDetailScreen(classroomId: id);
+            return ClassroomDetailScreen(
+              classroomId: id,
+            );
           },
         ),
         GoRoute(
