@@ -81,4 +81,38 @@ class UniversityDto {
 
   // Sérialisation JSON
   Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
+
+  factory UniversityDto.fromDomain(University university) {
+    return UniversityDto(
+      id: university.id,
+      name: university.name,
+      slug: university.slug,
+      description: university.description,
+      lng: university.lng,
+      lat: university.lat,
+      address: university.address,
+      classroomsCount: university.classroomsCount,
+      createdAtString: university.createdAt.toIso8601String(),
+      updatedAtString: university.updatedAt.toIso8601String(),
+    );
+  }
+
+  // Factory pour la création d'une nouvelle université
+  factory UniversityDto.create({
+    required String name,
+    required String slug,
+    String description = '',
+    String lng = '',
+    String lat = '',
+    String address = '',
+  }) {
+    return UniversityDto(
+      name: name,
+      slug: slug,
+      description: description,
+      lng: lng,
+      lat: lat,
+      address: address,
+    );
+  }
 }

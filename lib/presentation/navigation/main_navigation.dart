@@ -1,5 +1,4 @@
-import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/main.dart';
+import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
@@ -26,6 +25,10 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const HomeScreen(),
         ),
         GoRoute(
+          path: '/universities/add',
+          builder: (context, state) => const AddUniversityScreen(),
+        ),
+        GoRoute(
           path: '/universities/:id',
           builder: (context, state) {
             final universityId = state.pathParameters['id']!;
@@ -33,6 +36,10 @@ final GoRouter router = GoRouter(
               universityId: universityId,
             );
           },
+        ),
+        GoRoute(
+          path: '/classrooms/add',
+          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Ajouter une salle'),
         ),
         GoRoute(
           path: '/classrooms/:id',

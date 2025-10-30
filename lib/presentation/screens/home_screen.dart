@@ -49,9 +49,48 @@ class _HomeScreenState extends State<HomeScreen> {
     ).toList();
   }
 
+  void _showAddMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.school),
+                title: const Text('Ajouter une université'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push('/universities/add').then((shouldRefresh) {
+                    if (shouldRefresh == true) {
+                      // Refresh the universities list
+                      _loadUniversities();
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.meeting_room),
+                title: const Text('Ajouter une salle'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push('/classrooms/add');
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddMenu(context),
+        child: const Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: const Text('Universités'),
         bottom: PreferredSize(

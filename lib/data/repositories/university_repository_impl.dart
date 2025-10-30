@@ -17,6 +17,27 @@ class UniversityRepositoryImpl implements UniversityRepository {
     : _apiService = apiService;
 
   @override
+  Future<Response<dynamic>> createUniversity(University university) async {
+    try {
+      final dto = UniversityDto.create(
+        name: university.name,
+        slug: university.slug,
+        description: university.description,
+        lng: university.lng,
+        lat: university.lat,
+        address: university.address,
+      );
+      final response = await _apiService.post('/universities', data: dto.toJson());
+      return response;
+    } on DioException catch (e) {
+      throw ApiException(
+        message: 'Erreur lors de la création de l\'université: ${e.message}',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  @override
   Future<List<University>> getUniversities() async {
     try {
       final response = await _apiService.get('/universities');
