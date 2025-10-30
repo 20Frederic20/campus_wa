@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
+import 'package:campus_wa/presentation/widgets/image_display_widget.dart';
 
 class ClassroomDetailScreen extends StatefulWidget {
   final String classroomId;
@@ -101,12 +102,26 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   Text(
                     classroom.name,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  // Affichage de toutes les images dans un seul carrousel
+                  if (classroom.mainImage.isNotEmpty || classroom.annexesImages.isNotEmpty) ...[
+                    // Création d'une liste combinant l'image principale et les images annexes
+                    // On filtre les éventuelles valeurs nulles ou vides
+                    ImagesDisplayWidget(
+                      imageUrls: [
+                        if (classroom.mainImage.isNotEmpty) classroom.mainImage,
+                        ...classroom.annexesImages.where((img) => img.isNotEmpty),
+                      ],
+                      height: 250,
+                      enableCarousel: true,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                   SizedBox(
                     height: 250,
                     child: ClipRRect(
