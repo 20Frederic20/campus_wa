@@ -28,7 +28,7 @@ class UniversityClassroomsScreen extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.meeting_room, color: Colors.red),
                 title: Text(
-                  classroom?.nom ?? '',
+                  classroom?.name ?? '',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(classroom?.slug ?? ''),
