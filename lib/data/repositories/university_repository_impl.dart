@@ -3,7 +3,11 @@ import 'package:campus_wa/data/models/api/university_dto.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/core/exceptions/api_exception.dart';  // Ajoutez cette ligne
+import 'package:campus_wa/core/exceptions/api_exception.dart';
+import 'package:campus_wa/data/models/api/classroom_dto.dart';
+import 'package:campus_wa/domain/models/classroom.dart';
+
+
 
 class UniversityRepositoryImpl implements UniversityRepository {
   final ApiService _apiService = ApiService();
@@ -89,6 +93,31 @@ class UniversityRepositoryImpl implements UniversityRepository {
       if (e.response?.statusCode == 404) {
         throw Exception('Université non trouvée');
       }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Classroom>> getUniversityClassrooms(String id) async {
+    try {
+      final response = await _apiService.get('/universities/$id/classrooms');
+      
+      if (response.data is Map && response.data['classrooms'] != null) {
+        return (response.data['classrooms'] as List)
+            .map((json) => ClassroomDto.fromJson(json).toDomain())
+            .toList();
+      } else if (response.data is List) {
+        return (response.data as List)
+            .map((json) => ClassroomDto.fromJson(json).toDomain())
+            .toList();
+      } else if (response.data is Map && response.data['data'] != null) {
+        return (response.data['data'] as List)
+            .map((json) => ClassroomDto.fromJson(json).toDomain())
+            .toList();
+      }
+      
+      throw Exception('Format de réponse inattendu');
+    } on DioException {
       rethrow;
     }
   }
