@@ -5,7 +5,8 @@ import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/utils/error_utils.dart';
 
-class UniversityClassroomsScreen extends StatelessWidget {
+class UniversityClassroomsScreen extends StatefulWidget {
+
   final String universityId;
   final String universityName;
 
@@ -16,13 +17,63 @@ class UniversityClassroomsScreen extends StatelessWidget {
   });
 
   @override
+  State<UniversityClassroomsScreen> createState() => _UniversityClassroomsScreen();
+  
+}
+
+class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Classroom> _filterClassrooms(List<Classroom> classrooms, String query) {
+    if (query.isEmpty) return classrooms;
+    return classrooms.where((classroom) => 
+      classroom.name.toLowerCase().contains(query.toLowerCase()) ||
+      classroom.slug.toLowerCase().contains(query.toLowerCase())
+    ).toList();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Salles de $universityName'),
+        title: Text('Salles de ${widget.universityName}'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Rechercher une salle...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Theme.of(context).cardColor,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.trim();
+                });
+              },
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder<List<Classroom>>(
-        future: getIt<UniversityRepository>().getUniversityClassrooms(universityId),
+        future: getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -57,7 +108,9 @@ class UniversityClassroomsScreen extends StatelessWidget {
 
           final classrooms = snapshot.data ?? [];
           
-          if (classrooms.isEmpty) {
+          final filteredClassrooms = _filterClassrooms(classrooms, _searchQuery);
+          
+          if (filteredClassrooms.isEmpty) {
             return const Center(
               child: Text("Aucune salle de classe disponible"),
             );
@@ -67,9 +120,9 @@ class UniversityClassroomsScreen extends StatelessWidget {
             onRefresh: () => _refreshData(context),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: classrooms.length,
+              itemCount: filteredClassrooms.length,
               itemBuilder: (context, index) {
-                final classroom = classrooms[index];
+                final classroom = filteredClassrooms[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Card(
@@ -99,7 +152,7 @@ class UniversityClassroomsScreen extends StatelessWidget {
 
   Future<void> _refreshData(BuildContext context) async {
     try {
-      await getIt<UniversityRepository>().getUniversityClassrooms(universityId);
+      await getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId);
       // La mise à jour de l'interface sera gérée par le FutureBuilder
     } catch (e) {
       // L'erreur sera capturée par le FutureBuilder

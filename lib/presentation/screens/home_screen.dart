@@ -32,11 +32,53 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<University> _filterUniversities(List<University> universities, String query) {
+    if (query.isEmpty) return universities;
+    return universities.where((univ) => 
+      univ.name.toLowerCase().contains(query.toLowerCase()) ||
+      univ.slug.toLowerCase().contains(query.toLowerCase())
+    ).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Universités'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Rechercher une université...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Theme.of(context).cardColor,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.trim();
+                });
+              },
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder<List<University>>(
         future: _universities,
@@ -69,8 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           final universities = snapshot.data ?? [];
+          final filteredUniversities = _filterUniversities(universities, _searchQuery);
           
-          if (universities.isEmpty) {
+          if (filteredUniversities.isEmpty) {
             return const Center(
               child: Text('Aucune université trouvée'),
             );
@@ -78,9 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: universities.length,
+            itemCount: filteredUniversities.length,
             itemBuilder: (context, index) {
-              final university = universities[index];
+              final university = filteredUniversities[index];
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 child: ListTile(
