@@ -179,14 +179,14 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
             ),
 
             // Bouton pour voir les salles de classe
-            if (university.classrooms.isNotEmpty) ...[
+            if (university.classroomsCount > 0) ...[
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.meeting_room),
                   label: Text(
-                    'Voir les salles de classe (${university.classrooms.length})',
+                    'Voir les salles de classe (${university.classroomsCount})',
                   ),
                   onPressed: () => context.push(
                     '/universities/${university.id}/classrooms',
