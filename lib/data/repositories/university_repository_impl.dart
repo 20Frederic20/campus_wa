@@ -14,18 +14,58 @@ class UniversityRepositoryImpl implements UniversityRepository {
       final response = await _apiService.get('/universities');
 
       if (response.statusCode == 200) {
-        // Accéder au tableau 'universities' dans la réponse
-        final List<dynamic> universities = response.data['universities'] as List<dynamic>;
-        return universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+        try {
+          // Vérifier si la réponse contient un tableau 'universities'
+          if (response.data is Map && response.data['universities'] is List) {
+            final List<dynamic> universities = response.data['universities'] as List<dynamic>;
+            if (universities.isEmpty) {
+              return [];
+            }
+            return universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+          } else if (response.data is List) {
+            // Si la réponse est directement un tableau
+            final List<dynamic> universities = response.data as List<dynamic>;
+            if (universities.isEmpty) {
+              return [];
+            }
+            return universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+          } else {
+            throw ApiException(
+              message: 'Format de réponse inattendu',
+              statusCode: response.statusCode,
+            );
+          }
+        } catch (e) {
+          throw ApiException(
+            message: 'Erreur lors du traitement des données: ${e.toString()}',
+            statusCode: response.statusCode,
+          );
+        }
       }
 
       throw ApiException(
-        message: 'Erreur lors de la récupération des universités',
+        message: 'Échec de la récupération des universités (${response.statusCode})',
         statusCode: response.statusCode,
       );
-    } catch (e) {
+    } on DioException catch (e) {
+      // Gestion spécifique des erreurs de connexion
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout) {
+        throw ApiException(
+          message: 'Erreur de connexion au serveur. Vérifiez votre connexion internet.',
+          statusCode: 408, // Request Timeout
+        );
+      }
+      // Autres erreurs Dio
       throw ApiException(
-        message: 'Erreur lors du parsing des données: ${e.toString()}',
+        message: 'Erreur réseau: ${e.message}',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      // Toutes les autres erreurs
+      throw ApiException(
+        message: 'Erreur inattendue: ${e.toString()}',
       );
     }
   }
