@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Classroom extends Equatable {
   final String id;
-  final String nom;
+  final String name;
   final String slug;
   final String lng;
   final String lat ;
@@ -11,7 +11,7 @@ class Classroom extends Equatable {
 
   const Classroom({
     required this.id,
-    required this.nom,
+    required this.name,
     required this.slug,
     this.lng = '',
     this.lat = '',
@@ -22,7 +22,7 @@ class Classroom extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    nom,
+    name,
     slug,
     lng,
     lat,
