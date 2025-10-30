@@ -16,6 +16,8 @@ class UniversityDto {
   final String? createdAtString;
   @JsonKey(name: 'updated_at')
   final String? updatedAtString;
+  @JsonKey(name: 'classrooms_count')
+  final int? classroomsCount;
   @JsonKey()
   final String? description;
   @JsonKey()
@@ -34,6 +36,7 @@ class UniversityDto {
     this.slug,
     this.createdAtString,
     this.updatedAtString,
+    this.classroomsCount,
     this.description,
     this.lng,
     this.lat,
@@ -59,6 +62,7 @@ class UniversityDto {
       lng: lng ?? '',
       lat: lat ?? '',
       address: address ?? '',
+      classroomsCount: classroomsCount ?? 0,
       classrooms: const [], // Les salles de classe peuvent être chargées séparément
     );
   }

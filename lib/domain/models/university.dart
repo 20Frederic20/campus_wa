@@ -7,6 +7,7 @@ class University extends Equatable {
   final String slug;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int classroomsCount;
   final String description;
   final String lng;
   final String lat;
@@ -19,6 +20,7 @@ class University extends Equatable {
     required this.slug,
     required this.createdAt,
     required this.updatedAt,
+    required this.classroomsCount,
     this.description = '',
     this.lng = '',
     this.lat = '',
@@ -33,6 +35,7 @@ class University extends Equatable {
     slug,
     createdAt,
     updatedAt,
+    classroomsCount,
     description,
     lng,
     lat,
