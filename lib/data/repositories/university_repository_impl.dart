@@ -110,7 +110,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
       }
 
       throw Exception('Format de réponse inattendu');
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }

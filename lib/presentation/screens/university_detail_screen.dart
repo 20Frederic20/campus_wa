@@ -94,15 +94,14 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
   }
 
   Widget _buildContent(BuildContext context, University university) {
-    final hasValidCoords = university.lat != null && 
-                         university.lng != null &&
-                         university.lat!.isNotEmpty && 
-                         university.lng!.isNotEmpty;
+    final hasValidCoords = university.lng != null &&
+                         university.lat.isNotEmpty && 
+                         university.lng.isNotEmpty;
 
     final coords = hasValidCoords 
         ? LatLng(
-            double.parse(university.lat!), 
-            double.parse(university.lng!),
+            double.parse(university.lat), 
+            double.parse(university.lng),
           )
         : const LatLng(0, 0);
 
@@ -123,7 +122,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
           children: [
             // Carte
             SizedBox(
-              height: 250,
+              height: 300,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: LeafletMapWidget(
@@ -160,13 +159,12 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    _buildInfoRow(Icons.code, 'ID', university.id),
                     _buildInfoRow(Icons.link, 'Slug', university.slug),
-                    if (university.description?.isNotEmpty ?? false)
+                    if (university.description.isNotEmpty ?? false)
                       _buildInfoRow(
                         Icons.description,
                         'Description',
-                        university.description!,
+                        university.description,
                       ),
                     _buildInfoRow(
                       Icons.location_on,
