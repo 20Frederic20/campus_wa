@@ -1,4 +1,3 @@
-import 'package:campus_wa/domain/extensions/location_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +11,7 @@ class ClassroomDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final classroom = universities
-        .expand((u) => u.classrooms)
+        .expand((u) => u.classrooms?.toList() ?? [] )
         .firstWhere((a) => a.id == classroomId);
 
     return Scaffold(

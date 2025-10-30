@@ -6,8 +6,10 @@ final List<University> universities = [
     id: '1',
     name: 'Université d’Abomey-Calavi (UAC)',
     slug: 'universite-abomey-calavi',
-    lng: 2.3408,
-    lat: 6.4444,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    lng: "2.3408",
+    lat: "6.4444",
     classrooms: [
       Classroom(
         id: '1',
@@ -37,8 +39,10 @@ final List<University> universities = [
     id: '2',
     name: 'HECM Godomey',
     slug: 'hecm-godomey',
-    lng: 2.3689,
-    lat: 6.3843,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    lng: "2.3689",
+    lat: "6.3843",
     classrooms: [
       Classroom(
         id: '4',
@@ -61,8 +65,10 @@ final List<University> universities = [
     id: '3',
     name: 'École Supérieure de Gestion (ESGIS Calavi)',
     slug: 'esgis-calavi',
-    lng: 2.3734,
-    lat: 6.4327,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    lng: "2.3734",
+    lat: "6.4327",
     classrooms: [
       Classroom(
         id: '6',
@@ -85,8 +91,10 @@ final List<University> universities = [
     id: '4',
     name: 'Institut Universitaire Pan-Africain (IUPA)',
     slug: 'iupa-akassato',
-    lng: 2.3390,
-    lat: 6.4720,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    lng: "2.3390",
+    lat: "6.4720",
     classrooms: [
       Classroom(
         id: '8',
@@ -109,8 +117,10 @@ final List<University> universities = [
     id: '5',
     name: 'Université Polytechnique Internationale (UPI Onipko)',
     slug: 'upi-onipko',
-    lng: 2.3522,
-    lat: 6.4110,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    lng: "2.3522",
+    lat: "6.4110",
     classrooms: [
       Classroom(
         id: '10',

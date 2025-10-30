@@ -71,7 +71,7 @@ class UniversityDetailScreen extends StatelessWidget {
                   "Amphithéâtres",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
-                subtitle: Text("${univ.classrooms.length} amphithéâtres disponibles"),
+                subtitle: Text("${univ.classrooms?.length} amphithéâtres disponibles"),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () => context.push('/universities/${univ.id}/classrooms'),
               ),

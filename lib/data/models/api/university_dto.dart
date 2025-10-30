@@ -8,17 +8,23 @@ class UniversityDto {
   final String id;
   final String name;
   final String slug;
-  final String description;
-  final double lng;
-  final double lat;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? description;
+  final String? lng;
+  final String? lat;
+  final String? address;
 
   UniversityDto({
     required this.id,
     required this.name,
     required this.slug,
-    this.description = '',
-    required this.lng,
-    required this.lat,
+    required this.createdAt,
+    required this.updatedAt,
+    this.description,
+    this.lng,
+    this.lat,
+    this.address,
   });
 
   // Convertir le DTO en modèle de domaine
@@ -27,9 +33,12 @@ class UniversityDto {
       id: id,
       name: name,
       slug: slug,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       description: description,
       lng: lng,
       lat: lat,
+      address: address,
       classrooms: [], // Les salles de classe peuvent être chargées séparément
     );
   }

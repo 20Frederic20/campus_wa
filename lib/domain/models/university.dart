@@ -4,18 +4,24 @@ class University {
   final String id;
   final String name;
   final String slug;
-  final String description;
-  final double lng;
-  final double lat;
-  final List<Classroom> classrooms;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? description;
+  final String? lng;
+  final String? lat;
+  final String? address;
+  final List<Classroom>? classrooms;
 
   University({
     required this.id,
     required this.name,
     required this.slug,
+    required this.createdAt,
+    required this.updatedAt,
     this.description = '',
-    required this.lng,
-    required this.lat,
-    required this.classrooms,
+    this.lng = '',
+    this.lat = '',
+    this.address = '',
+    this.classrooms = const [],
   });
 }

@@ -17,9 +17,9 @@ class UniversityClassroomsScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: univ.classrooms.length,
+        itemCount: univ.classrooms?.length,
         itemBuilder: (context, index) {
-          final classroom = univ.classrooms[index];
+          final classroom = univ.classrooms?[index];
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Card(
@@ -28,12 +28,12 @@ class UniversityClassroomsScreen extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.meeting_room, color: Colors.red),
                 title: Text(
-                  classroom.nom,
+                  classroom?.nom ?? '',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: Text(classroom.slug),
+                subtitle: Text(classroom?.slug ?? ''),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => context.push('/classrooms/${classroom.id}'),
+                onTap: () => context.push('/classrooms/${classroom?.id}'),
               ),
             ),
           );
