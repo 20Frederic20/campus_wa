@@ -8,6 +8,8 @@ class Classroom extends Equatable {
   final String lat ;
   final String mainImage;
   final List<String> annexesImages;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   const Classroom({
     required this.id,
@@ -17,6 +19,8 @@ class Classroom extends Equatable {
     this.lat = '',
     this.mainImage = '',
     this.annexesImages = const [],
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   @override
@@ -28,5 +32,7 @@ class Classroom extends Equatable {
     lat,
     mainImage,
     annexesImages,
+    createdAt,
+    updatedAt,
   ];
 }
