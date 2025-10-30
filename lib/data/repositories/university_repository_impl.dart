@@ -7,6 +7,7 @@ import 'package:campus_wa/core/exceptions/api_exception.dart';  // Ajoutez cette
 
 class UniversityRepositoryImpl implements UniversityRepository {
   final ApiService _apiService = ApiService();
+  final Map<String, University> _cache = {};
 
   @override
   Future<List<University>> getUniversities() async {
@@ -72,9 +73,18 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
   @override
   Future<University> getUniversityById(String id) async {
+    if (_cache.containsKey(id)) {
+      return _cache[id]!;
+    }
+
     try {
       final response = await _apiService.get('/universities/$id');
-      return UniversityDto.fromJson(response.data).toDomain();
+      if (response.data is Map && response.data['university'] is Map) {
+        final university = UniversityDto.fromJson(response.data['university']).toDomain();
+        _cache[id] = university;
+        return university;
+      }
+      throw Exception('Format de réponse inattendue');
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         throw Exception('Université non trouvée');

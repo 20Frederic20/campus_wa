@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:go_router/go_router.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _universityRepository = UniversityRepositoryImpl();
+  final UniversityRepository universityRepository = UniversityRepositoryImpl();
   late Future<List<University>> _universities;
 
   @override
@@ -22,11 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUniversities() {
     setState(() {
-      _universities = _universityRepository.getUniversities();
+      _universities = universityRepository.getUniversities();
     });
     return _universities.catchError((error) {
-      // Error will be handled by FutureBuilder
-      print(error);
+      debugPrint('Error loading universities: $error');
       return [];
     });
   }
@@ -86,7 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text(university.name),
                   subtitle: Text(university.slug),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => context.push('/universities/${university.id}'),
+                  onTap: () => context.push(
+                    '/universities/${university.id}',
+                    extra: universityRepository,
+                  ),
                 ),
               );
             },
