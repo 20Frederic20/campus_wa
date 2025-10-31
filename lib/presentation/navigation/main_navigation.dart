@@ -73,6 +73,10 @@ final GoRouter router = GoRouter(
               const UnderDevelopmentScreen(featureName: 'Favoris'),
         ),
         GoRoute(
+          path: '/geolocation',
+          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Geolocation'),
+        ),
+        GoRoute(
           path: ':splat(.*)',
           builder: (context, state) => const NotFoundScreen(),
         ),
