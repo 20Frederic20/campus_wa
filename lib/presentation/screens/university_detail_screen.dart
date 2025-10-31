@@ -1,4 +1,3 @@
-import 'package:campus_wa/main.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -6,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 
 class UniversityDetailScreen extends StatefulWidget {
   final String universityId;
@@ -30,7 +30,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
 
   Future<void> _loadUniversity() {
     setState(() {
-      _universityFuture = getIt<UniversityRepository>()
+      _universityFuture = di.getIt<UniversityRepository>()
           .getUniversityById(widget.universityId)
           .then((university) {
         // S'assurer que l'université est valide

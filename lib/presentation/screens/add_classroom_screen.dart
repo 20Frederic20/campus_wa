@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/main.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 
 class AddClassroomScreen extends StatefulWidget {
   final String? universityId;
@@ -46,7 +46,7 @@ class _AddClassroomScreenState extends State<AddClassroomScreen> {
 
   Future<void> _loadUniversities() async {
     try {
-      final universities = await getIt<UniversityRepository>().getUniversities();
+      final universities = await di.getIt<UniversityRepository>().getUniversities();
       setState(() {
         _universities = universities;
         _selectedUniversityId = widget.universityId ?? 
@@ -82,7 +82,7 @@ class _AddClassroomScreenState extends State<AddClassroomScreen> {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      await getIt<ClassroomRepository>().createClassroom(classroom);
+      await di.getIt<ClassroomRepository>().createClassroom(classroom);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

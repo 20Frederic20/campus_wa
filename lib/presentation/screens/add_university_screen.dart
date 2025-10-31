@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/main.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 
 class AddUniversityScreen extends StatefulWidget {
   const AddUniversityScreen({super.key});
@@ -51,7 +51,7 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
         classrooms: [],
       );
 
-      final response = await getIt<UniversityRepository>().createUniversity(university);
+      final response = await di.getIt<UniversityRepository>().createUniversity(university);
       
       if (mounted) {
         if (response.statusCode == 201) {

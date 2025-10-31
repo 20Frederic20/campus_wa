@@ -1,9 +1,9 @@
-import 'package:campus_wa/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/utils/error_utils.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 
 class UniversityClassroomsScreen extends StatefulWidget {
 
@@ -73,7 +73,7 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
         ),
       ),
       body: FutureBuilder<List<Classroom>>(
-        future: getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId),
+        future: di.getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -152,7 +152,7 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
 
   Future<void> _refreshData(BuildContext context) async {
     try {
-      await getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId);
+      await di.getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId);
       // La mise à jour de l'interface sera gérée par le FutureBuilder
     } catch (e) {
       // L'erreur sera capturée par le FutureBuilder

@@ -1,8 +1,8 @@
-import 'package:campus_wa/main.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    universityRepository = getIt<UniversityRepository>();
+    universityRepository = di.getIt<UniversityRepository>();
     _loadUniversities();
   }
 
