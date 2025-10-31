@@ -28,22 +28,23 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
     _loadUniversity();
   }
 
-  Future<void> _loadUniversity() {
-    setState(() {
-      _universityFuture = di.getIt<UniversityRepository>()
-          .getUniversityById(widget.universityId)
-          .then((university) {
-        // S'assurer que l'université est valide
-        if (university == null) {
-          throw Exception('Université non trouvée');
-        }
-        return university;
+  Future<void> _loadUniversity() async {
+    try {
+      final university = await di.getIt<UniversityRepository>()
+          .getUniversityById(widget.universityId);
+      
+      if (!mounted) return;
+      
+      setState(() {
+        _universityFuture = Future.value(university);
       });
-    });
-    return _universityFuture.catchError((error) {
+    } catch (error) {
       debugPrint('Error loading university: $error');
-      throw error;
-    });
+      if (!mounted) return;
+      setState(() {
+        _universityFuture = Future.error(error);
+      });
+    }
   }
 
   void _refresh() {

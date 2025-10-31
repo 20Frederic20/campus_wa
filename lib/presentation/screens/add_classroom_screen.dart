@@ -1,24 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:campus_wa/domain/models/classroom.dart';
-import 'package:campus_wa/domain/repositories/classroom_repository.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/injection.dart' as di;
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:flutter/material.dart';
 
 class AddClassroomScreen extends StatefulWidget {
-  final String? universityId;
   const AddClassroomScreen({
     super.key,
     this.universityId,
   });
 
+  final String? universityId;
+
   @override
-  _AddClassroomScreenState createState() => _AddClassroomScreenState();
+  State<AddClassroomScreen> createState() => __$AddClassroomScreenState();
 }
 
-class _AddClassroomScreenState extends State<AddClassroomScreen> {
+class __$AddClassroomScreenState extends State<AddClassroomScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _slugController = TextEditingController();

@@ -19,7 +19,7 @@ class SearchBarWidget extends StatelessWidget {
         hintStyle: TextStyle(color: Colors.grey[600]),
         prefixIcon: const Icon(Icons.search, color: Colors.blue),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(76), // ~30% opacity
         contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),

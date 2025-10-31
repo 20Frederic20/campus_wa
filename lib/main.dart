@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/theme/app_theme.dart';
-import 'presentation/navigation/main_navigation.dart';
-import 'core/injection.dart' as di;
+import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/core/theme/app_theme.dart';
+import 'package:campus_wa/presentation/navigation/main_navigation.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
