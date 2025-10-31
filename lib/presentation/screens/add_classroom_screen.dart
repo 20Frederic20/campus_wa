@@ -1,22 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:campus_wa/domain/models/classroom.dart';
-import 'package:campus_wa/domain/repositories/classroom_repository.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:flutter/material.dart';
 
 class AddClassroomScreen extends StatefulWidget {
-  final String? universityId;
   const AddClassroomScreen({
-    Key? key,
+    super.key,
     this.universityId,
-  }) : super(key: key);
+  });
+
+  final String? universityId;
 
   @override
-  _AddClassroomScreenState createState() => _AddClassroomScreenState();
+  State<AddClassroomScreen> createState() => __$AddClassroomScreenState();
 }
 
-class _AddClassroomScreenState extends State<AddClassroomScreen> {
+class __$AddClassroomScreenState extends State<AddClassroomScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _slugController = TextEditingController();
@@ -135,7 +136,7 @@ class _AddClassroomScreenState extends State<AddClassroomScreen> {
                   ),
                 
                 DropdownButtonFormField<String>(
-                  value: _selectedUniversityId,
+                  initialValue: _selectedUniversityId,
                   decoration: const InputDecoration(
                     labelText: 'Université*',
                     border: OutlineInputBorder(),

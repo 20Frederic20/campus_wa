@@ -1,6 +1,6 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/core/exceptions/api_exception.dart';
+import 'package:campus_wa/domain/models/university.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'university_dto.g.dart';
 
@@ -27,9 +27,6 @@ class UniversityDto {
   @JsonKey()
   final String? address;
   
-  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
-  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
-
   UniversityDto({
     this.id,
     this.name,
@@ -42,6 +39,34 @@ class UniversityDto {
     this.lat,
     this.address,
   });
+
+  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
+  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
+
+  // Désérialisation JSON
+  factory UniversityDto.fromJson(Map<String, dynamic> json) => _$UniversityDtoFromJson(json);
+
+  // Sérialisation JSON
+  Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
+
+  // Factory pour la création d'une nouvelle université
+  factory UniversityDto.create({
+    required String name,
+    required String slug,
+    String description = '',
+    String lng = '',
+    String lat = '',
+    String address = '',
+  }) {
+    return UniversityDto(
+      name: name,
+      slug: slug,
+      description: description,
+      lng: lng,
+      lat: lat,
+      address: address,
+    );
+  }
 
   // Convertir le DTO en modèle de domaine
   University toDomain() {
@@ -67,21 +92,6 @@ class UniversityDto {
     );
   }
 
-  // Désérialisation JSON
-  factory UniversityDto.fromJson(Map<String, dynamic> json) {
-    try {
-      return _$UniversityDtoFromJson(json);
-    } catch (e, stackTrace) {
-      print('Error parsing UniversityDto: $e');
-      print('Stack trace: $stackTrace');
-      print('JSON data: $json');
-      rethrow;
-    }
-  }
-
-  // Sérialisation JSON
-  Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
-
   factory UniversityDto.fromDomain(University university) {
     return UniversityDto(
       id: university.id,
@@ -94,25 +104,6 @@ class UniversityDto {
       classroomsCount: university.classroomsCount,
       createdAtString: university.createdAt.toIso8601String(),
       updatedAtString: university.updatedAt.toIso8601String(),
-    );
-  }
-
-  // Factory pour la création d'une nouvelle université
-  factory UniversityDto.create({
-    required String name,
-    required String slug,
-    String description = '',
-    String lng = '',
-    String lat = '',
-    String address = '',
-  }) {
-    return UniversityDto(
-      name: name,
-      slug: slug,
-      description: description,
-      lng: lng,
-      lat: lat,
-      address: address,
     );
   }
 }

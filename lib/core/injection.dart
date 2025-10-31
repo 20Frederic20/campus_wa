@@ -1,11 +1,11 @@
-import 'package:get_it/get_it.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:dio/dio.dart';
-import 'package:campus_wa/data/repositories/university_repository_impl.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/data/repositories/claassroom_repository_impl.dart';
+import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
 

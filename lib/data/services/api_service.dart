@@ -4,13 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class ApiService {
-  static final ApiService _instance = ApiService._internal();
-  late final Dio _dio;
-  final String _baseUrl = dotenv.env['API_BASE_URL'] ?? '';
-
-  // Factory constructor pour retourner toujours la même instance
-  factory ApiService() => _instance;
-
+  
   // Constructeur privé
   ApiService._internal() {
     _dio = Dio(
@@ -90,6 +84,13 @@ class ApiService {
       ),
     );
   }
+
+  static final ApiService _instance = ApiService._internal();
+  late final Dio _dio;
+  final String _baseUrl = dotenv.env['API_BASE_URL'] ?? '';
+
+  // Factory constructor pour retourner toujours la même instance
+  factory ApiService() => _instance;
 
   // Méthode pour mettre à jour le token d'authentification
   void updateAuthToken(String? token) {
