@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:campus_wa/data/models/api/classroom_dto.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
@@ -11,7 +13,11 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   ClassroomRepositoryImpl({required ApiService apiService}) : _apiService = apiService;
   
   @override
-  Future<Classroom> createClassroom(Classroom classroom) async {
+  Future<Classroom> createClassroom(
+    Classroom classroom,
+    File? mainImage,
+    {List<File> annexesImages = const []}
+  ) async {
     try {
       final dto = ClassroomDto.create(
         universityId: classroom.universityId,
@@ -19,14 +25,24 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         slug: classroom.slug,
         lng: classroom.lng,
         lat: classroom.lat,
-        mainImage: classroom.mainImage,
-        annexesImages: classroom.annexesImages,
       );
-      final response = await _apiService.post('/classrooms', data: dto.toJson());
+      FormData formData = FormData.fromMap({
+        ...dto.toJson(),
+        if (mainImage != null)
+          'main_image': await MultipartFile.fromFile(mainImage.path, filename: 'mainImage.jpg'),
+        if (annexesImages.isNotEmpty)
+          'annexes': await Future.wait(
+            annexesImages.map((file) => MultipartFile.fromFile(file.path, filename: 'annexe_${annexesImages.indexOf(file)}.jpg')),
+          ),
+      });
+
+      // Envoyer avec Dio
+      final response = await _apiService.post('/classrooms', data: formData);
+
       if (response.data is Map && response.data['classroom'] is Map) {
-        final classroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
-        _cache[classroom.id] = classroom;
-        return classroom;
+        final createdClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        // _cache[createdClassroom.id] = createdClassroom;
+        return createdClassroom;
       }
       throw Exception('Format de réponse inattendu lors de la création de la salle');
     } on DioException catch (e) {
