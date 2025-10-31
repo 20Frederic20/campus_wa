@@ -21,6 +21,9 @@ class ClassroomDto {
   @JsonKey(name: 'lat')
   final String? lat;
 
+  @JsonKey(name: 'university_id')
+  final String? universityId;
+
   @JsonKey(name: 'main_image')
   final String? mainImage;
 
@@ -42,6 +45,7 @@ class ClassroomDto {
     this.slug,
     this.lng,
     this.lat,
+    this.universityId,
     this.mainImage,
     this.annexesImages,
     this.createdAtString,
@@ -72,4 +76,24 @@ class ClassroomDto {
   factory ClassroomDto.fromJson(Map<String, dynamic> json) => _$ClassroomDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ClassroomDtoToJson(this);
+
+  factory ClassroomDto.create({
+    required String universityId,
+    required String name,
+    required String slug,
+    String lng = '',
+    String lat = '',
+    String mainImage = '',
+    List<String> annexesImages = const [],
+  }) {
+    return ClassroomDto(
+      universityId: universityId,
+      name: name,
+      slug: slug,
+      lng: lng,
+      lat: lat,
+      mainImage: mainImage,
+      annexesImages: annexesImages,
+    );
+  }
 }

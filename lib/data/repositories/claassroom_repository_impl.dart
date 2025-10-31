@@ -9,6 +9,37 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   final Map<String, Classroom> _cache = {};
 
   ClassroomRepositoryImpl({required ApiService apiService}) : _apiService = apiService;
+  
+  @override
+  Future<Classroom> createClassroom(Classroom classroom) async {
+    try {
+      final dto = ClassroomDto.create(
+        universityId: classroom.universityId,
+        name: classroom.name,
+        slug: classroom.slug,
+        lng: classroom.lng,
+        lat: classroom.lat,
+        mainImage: classroom.mainImage,
+        annexesImages: classroom.annexesImages,
+      );
+      final response = await _apiService.post('/classrooms', data: dto.toJson());
+      if (response.data is Map && response.data['classroom'] is Map) {
+        final classroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        _cache[classroom.id] = classroom;
+        return classroom;
+      }
+      throw Exception('Format de réponse inattendu lors de la création de la salle');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 422) {
+        final errors = e.response?.data['errors'] ?? {};
+        final errorMessage = errors.entries
+            .map((e) => '${e.key}: ${e.value.join(', ')}')
+            .join('\n');
+        throw Exception(errorMessage.isNotEmpty ? errorMessage : 'Données invalides');
+      }
+      rethrow;
+    }
+  }
 
   @override
   Future<Classroom?> getClassroomById(String id) async {

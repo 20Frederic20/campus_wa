@@ -1,3 +1,4 @@
+import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/classrooms/add',
-          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Ajouter une salle'),
+          builder: (context, state) => const AddClassroomScreen(),
         ),
         GoRoute(
           path: '/classrooms/:id',

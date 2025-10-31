@@ -6,6 +6,7 @@ class Classroom extends Equatable {
   final String slug;
   final String lng;
   final String lat ;
+  final String universityId;
   final String mainImage;
   final List<String> annexesImages;
   final DateTime createdAt;
@@ -17,6 +18,7 @@ class Classroom extends Equatable {
     required this.slug,
     this.lng = '',
     this.lat = '',
+    this.universityId = '',
     this.mainImage = '',
     this.annexesImages = const [],
     required this.createdAt,
@@ -30,6 +32,7 @@ class Classroom extends Equatable {
     slug,
     lng,
     lat,
+    universityId,
     mainImage,
     annexesImages,
     createdAt,
