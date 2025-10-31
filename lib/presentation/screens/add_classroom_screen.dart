@@ -29,6 +29,30 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
   String? _errorMessage;
   List<University> _universities = [];
   String? _selectedUniversityId;
+  File? _mainImageFile;
+  final List<File> _annexesImagesFiles = [];
+
+  Future<void> _pickMainImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _mainImageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _pickAnnexImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _annexesImagesFiles.add(File(pickedFile.path));
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -78,12 +102,14 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
         slug: _slugController.text.trim(),
         lng: _lngController.text.trim().isNotEmpty ? _lngController.text.trim() : '',
         lat: _latController.text.trim().isNotEmpty ? _latController.text.trim() : '',
-        mainImage: '',
-        annexesImages: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      await di.getIt<ClassroomRepository>().createClassroom(classroom);
+      await di.getIt<ClassroomRepository>().createClassroom(
+        classroom,
+        _mainImageFile,
+        annexesImages: _annexesImagesFiles
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -224,15 +250,76 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
+                const Text('Image principale', style: TextStyle(fontWeight: FontWeight.bold)),
+                GestureDetector(
+                  onTap: _pickMainImage,
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: _mainImageFile != null
+                        ? Image.file(_mainImageFile!, fit: BoxFit.cover)
+                        : const Center(child: Icon(Icons.add_a_photo, size: 40)),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                const Text('Images annexes', style: TextStyle(fontWeight: FontWeight.bold)),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ..._annexesImagesFiles.map((file) => Stack(
+                      children: [
+                        Image.file(file, width: 100, height: 100, fit: BoxFit.cover),
+                        Positioned(
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.remove_circle, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _annexesImagesFiles.remove(file);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    )),
+                    GestureDetector(
+                      onTap: _pickAnnexImage,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.add, size: 30),
+                      ),
+                    ),
+                  ],
+                ),
                 
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: const TextStyle(fontSize: 16),
+                    textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      inherit: true,
+                    ),
                   ),
-                  child: const Text('Ajouter la salle'),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20, 
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white, 
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Ajouter la salle'),
                 ),
               ],
             ),
