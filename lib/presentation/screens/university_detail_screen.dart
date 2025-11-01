@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/core/injection.dart' as di;
+import 'package:url_launcher/url_launcher.dart';
 
 class UniversityDetailScreen extends StatefulWidget {
   final String universityId;
@@ -144,7 +145,55 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            
+            // Boutons d'action
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.map),
+                    label: const Text('Ouvrir dans Google Maps'),
+                    onPressed: hasValidCoords ? () async {
+                      try {
+                        final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}');
+                        final canLaunch = await canLaunchUrl(url);
+                        if (canLaunch) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          if (!mounted) return;
+                          // Essayer d'ouvrir directement avec l'application par défaut
+                          await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication);
+                        }
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Erreur: ${e.toString()}')),
+                        );
+                      }
+                    } : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.directions),
+                    label: const Text('Itinéraire'),
+                    onPressed: hasValidCoords ? () {
+                      // Redirection vers l'écran de développement
+                      context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
+                    } : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
             // Informations de base
             Card(
