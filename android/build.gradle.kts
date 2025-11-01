@@ -1,7 +1,29 @@
+buildscript {
+    extra.apply {
+        set("kotlin_version", "1.9.22")
+    }
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+    
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.2.0")
+        classpath(kotlin("gradle-plugin", version = "${rootProject.extra["kotlin_version"]}"))
+    }
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+    
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_17.toString()
+        }
     }
 }
 

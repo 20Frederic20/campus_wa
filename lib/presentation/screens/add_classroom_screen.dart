@@ -4,6 +4,8 @@ import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddClassroomScreen extends StatefulWidget {
   const AddClassroomScreen({
