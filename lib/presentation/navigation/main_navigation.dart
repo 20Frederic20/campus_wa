@@ -9,6 +9,7 @@ import 'package:campus_wa/presentation/screens/university_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:campus_wa/core/theme/app_theme.dart';
 
 /// Configuration principale du router avec GoRouter
 final GoRouter router = GoRouter(
@@ -100,30 +101,57 @@ class MainScaffold extends StatelessWidget {
       body: child,
       bottomNavigationBar: isWelcomeScreen
           ? null
-          : BottomNavigationBar(
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: "Accueil",
+          : Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
-                  label: "Recherche",
+                child: NavigationBar(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  indicatorColor: AppColors.primaryGreen.withOpacity(0.2),
+                  surfaceTintColor: Colors.transparent,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                  selectedIndex: _calculateSelectedIndex(location),
+                  onDestinationSelected: (index) => _onItemTapped(context, index),
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined, size: 26),
+                      selectedIcon: Icon(Icons.home, size: 26, color: AppColors.primaryGreen),
+                      label: 'Accueil',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search_outlined, size: 26),
+                      selectedIcon: Icon(Icons.search, size: 26, color: AppColors.primaryGreen),
+                      label: 'Recherche',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.star_outline, size: 26),
+                      selectedIcon: Icon(Icons.star, size: 26, color: AppColors.primaryGreen),
+                      label: 'Favoris',
+                    ),
+                  ],
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.star),
-                  label: "Favoris",
-                ),
-              ],
-              currentIndex: _calculateSelectedIndex(location),
-              onTap: (index) => _onItemTapped(context, index),
+              ),
             ),
     );
   }
 
   /// Calcule quel onglet est sélectionné
   static int _calculateSelectedIndex(String location) {
-    if (location.startsWith('/home')) return 0;
+    if (location == '/home' || 
+        location.startsWith('/universities/') || 
+        location == '/universities/add') return 0;
     if (location.startsWith('/search')) return 1;
     if (location.startsWith('/favorites')) return 2;
     return 0; // par défaut

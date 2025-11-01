@@ -1,12 +1,13 @@
+import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/core/injection.dart' as di;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:campus_wa/core/theme/app_theme.dart';
 
 class UniversityDetailScreen extends StatefulWidget {
   final String universityId;
@@ -21,40 +22,34 @@ class UniversityDetailScreen extends StatefulWidget {
 }
 
 class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
-  late Future<University> _universityFuture;
+  late Future<University?> _universityFuture;
 
   @override
   void initState() {
     super.initState();
-    _loadUniversity();
+    _universityFuture = _loadUniversity();
   }
 
-  Future<void> _loadUniversity() async {
+  Future<University?> _loadUniversity() async {
     try {
       final university = await di.getIt<UniversityRepository>()
           .getUniversityById(widget.universityId);
-      
-      if (!mounted) return;
-      
-      setState(() {
-        _universityFuture = Future.value(university);
-      });
+      return university;
     } catch (error) {
       debugPrint('Error loading university: $error');
-      if (!mounted) return;
-      setState(() {
-        _universityFuture = Future.error(error);
-      });
+      rethrow;
     }
   }
 
   void _refresh() {
-    _loadUniversity();
+    setState(() {
+      _universityFuture = _loadUniversity();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<University>(
+    return FutureBuilder<University?>(
       future: _universityFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -107,13 +102,18 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(university.name),
+        title: Text(
+          university.name,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _refresh,
+            tooltip: 'Rafraîchir',
           ),
         ],
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -136,8 +136,8 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                             height: 40,
                             child: const Icon(
                               Icons.location_on,
-                              color: Colors.red,
-                              size: 40,
+                              color: AppColors.accentRed,
+                              size: 48,
                             ),
                           ),
                         ]
@@ -152,8 +152,9 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.map),
-                    label: const Text('Ouvrir dans Google Maps'),
+                    icon: const Icon(Icons.map_outlined, size: 20),
+                    label: const Text('Ouvrir dans Google Maps', 
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                     onPressed: hasValidCoords ? () async {
                       try {
                         final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}');
@@ -180,8 +181,9 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.directions),
-                    label: const Text('Itinéraire'),
+                    icon: const Icon(Icons.directions_outlined, size: 20),
+                    label: const Text('Itinéraire',
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                     onPressed: hasValidCoords ? () {
                       // Redirection vers l'écran de développement
                       context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
@@ -197,14 +199,28 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
 
             // Informations de base
             Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Détails',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Row(
+                      children: [
+                        const Icon(Icons.info_outline, 
+                          color: AppColors.primaryGreen),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Détails',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.primaryGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     _buildInfoRow(Icons.link, 'Slug', university.slug),
@@ -232,9 +248,10 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  icon: const Icon(Icons.meeting_room),
+                  icon: const Icon(Icons.meeting_room_outlined, 
+                    color: Colors.white),
                   label: Text(
-                    'Voir les salles de classe (${university.classroomsCount})',
+                    'Voir la liste des amphi(${university.classroomsCount})',
                   ),
                   onPressed: () => context.push(
                     '/universities/${university.id}/classrooms',
@@ -249,28 +266,40 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 8),
+          Icon(icon, size: 20, color: AppColors.primaryGreen),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  label,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                  label.toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 14),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary,
+                    height: 1.3,
+                  ),
                 ),
               ],
             ),

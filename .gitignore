@@ -54,3 +54,4 @@ app.*.map.json
 
 # DevTools options
 devtools_options.yaml
+drawable-*/

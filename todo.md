@@ -1,0 +1,1 @@
+Ajouter la photo d'un étudiant en background pour la paage de welcome  et celle d'accueil aussi si possible

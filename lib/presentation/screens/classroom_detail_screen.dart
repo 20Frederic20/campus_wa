@@ -5,7 +5,11 @@ import 'package:campus_wa/presentation/widgets/image_display_widget.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:campus_wa/core/theme/app_theme.dart';
+
 
 class ClassroomDetailScreen extends StatefulWidget {
   final String classroomId;
@@ -56,7 +60,13 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Détails de la salle')),
+      appBar: AppBar(
+        title: const Text(
+          'Détails de l’amphi',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        elevation: 0,
+      ),
       body: FutureBuilder<Classroom?>(
         future: _classroomFuture,
         builder: (context, snapshot) {
@@ -69,7 +79,7 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  const Icon(Icons.error_outline, color: AppColors.accentRed, size: 60),
                   const SizedBox(height: 16),
                   Text(
                     snapshot.error?.toString() ?? 'Salle non trouvée',
@@ -97,15 +107,39 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
           debugPrint('Building UI for classroom: ${classroom.name}');
           return RefreshIndicator(
             onRefresh: _loadClassroom,
+            color: AppColors.primaryGreen,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  Text(
-                    classroom.name,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Card(
+                    elevation: 0,
+                    color: AppColors.primaryGreen.withOpacity(0.1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: AppColors.primaryGreen.withOpacity(0.2)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(Icons.meeting_room_outlined, color: AppColors.primaryGreen, size: 24),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              classroom.name + (classroom.name.isNotEmpty ? ' (' + classroom.slug + ')' : ''),
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: AppColors.primaryGreen,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   // Affichage de toutes les images dans un seul carrousel
@@ -134,7 +168,7 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
                                   point: coords,
                                   width: 40,
                                   height: 40,
-                                  child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                  child: const Icon(Icons.location_on, color: AppColors.accentRed, size: 48),
                                 )
                               ]
                             : [],
@@ -143,17 +177,75 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text("Retour"),
+                  
+                  // Boutons d'action
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.map_outlined, size: 20),
+                          label: const Text(
+                            'Ouvrir dans Google Maps',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          onPressed: hasValidCoords ? () async {
+                            try {
+                              final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}');
+                              final canLaunch = await canLaunchUrl(url);
+                              if (canLaunch) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+                              } else {
+                                if (!mounted) return;
+                                // Essayer d'ouvrir directement avec l'application par défaut
+                                await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication);
+                              }
+                            } catch (e) {
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Erreur: ${e.toString()}')),
+                              );
+                            }
+                          } : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.directions_outlined, size: 20),
+                          label: const Text(
+                            'Itinéraire',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          onPressed: hasValidCoords ? () {
+                            // Redirection vers l'écran de développement
+                            context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
+                          } : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(Icons.arrow_back_rounded),
+                            label: const Text(
+                              'Retour',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
           );
         },
       ),
