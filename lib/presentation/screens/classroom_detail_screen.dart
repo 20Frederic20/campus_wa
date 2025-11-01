@@ -1,21 +1,21 @@
+import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/presentation/widgets/image_display_widget.dart';
+import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campus_wa/domain/models/classroom.dart';
-import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
-import 'package:campus_wa/presentation/widgets/image_display_widget.dart';
-import 'package:campus_wa/core/injection.dart' as di;
 
 class ClassroomDetailScreen extends StatefulWidget {
   final String classroomId;
   const ClassroomDetailScreen({super.key, required this.classroomId});
 
   @override
-  State<ClassroomDetailScreen> createState() => _ClassroomDetailScreenState();
+  State<ClassroomDetailScreen> createState() => __$ClassroomDetailScreenState();
 }
 
-class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
+class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
   late Future<Classroom?> _classroomFuture;
 
   @override

@@ -1,11 +1,11 @@
-import 'package:dio/dio.dart';
-import 'package:campus_wa/data/models/api/university_dto.dart';
-import 'package:campus_wa/data/services/api_service.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/exceptions/api_exception.dart';
 import 'package:campus_wa/data/models/api/classroom_dto.dart';
+import 'package:campus_wa/data/models/api/university_dto.dart';
+import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:dio/dio.dart';
 
 
 

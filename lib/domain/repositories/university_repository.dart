@@ -1,5 +1,5 @@
-import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/models/university.dart';
 import 'package:dio/dio.dart';
 
 abstract class UniversityRepository {

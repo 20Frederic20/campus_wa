@@ -26,7 +26,7 @@ class LeafletMapWidget extends StatelessWidget {
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.campus_wa',
-          errorImage: NetworkImage('https://tile.openstreetmap.org/0/0/0.png'),
+          errorImage: const NetworkImage('https://tile.openstreetmap.org/0/0/0.png'),
         ),
         MarkerLayer(markers: markers),
       ],

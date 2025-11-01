@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:go_router/go_router.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/domain/models/university.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,12 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUniversities() {
     setState(() {
-      _universities = universityRepository.getUniversities();
+      _universities = universityRepository.getUniversities().catchError((error) {
+        debugPrint('Error loading universities: $error');
+        return <University>[]; // Explicitly specify the type
+      });
     });
-    return _universities.catchError((error) {
-      debugPrint('Error loading universities: $error');
-      return [];
-    });
+    return _universities.then((_) {});
   }
 
   final TextEditingController _searchController = TextEditingController();

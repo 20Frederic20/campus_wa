@@ -60,10 +60,10 @@ class ImagesDisplayWidget extends StatelessWidget {
 
 // === Image unique ===
 class _SingleImage extends StatelessWidget {
+  const _SingleImage({required this.imageUrl, required this.height});
+
   final String imageUrl;
   final double height;
-
-  const _SingleImage({required this.imageUrl, required this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +92,10 @@ class _SingleImage extends StatelessWidget {
 
 // === Carrousel ===
 class _ImageCarousel extends StatefulWidget {
+  const _ImageCarousel({required this.imageUrls, required this.height});
+
   final List<String> imageUrls;
   final double height;
-
-  const _ImageCarousel({required this.imageUrls, required this.height});
 
   @override
   State<_ImageCarousel> createState() => _ImageCarouselState();

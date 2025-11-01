@@ -1,14 +1,14 @@
 import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
+import 'package:campus_wa/presentation/screens/classroom_detail_screen.dart';
+import 'package:campus_wa/presentation/screens/home_screen.dart';
+import 'package:campus_wa/presentation/screens/not_found_screen.dart';
+import 'package:campus_wa/presentation/screens/under_development_screen.dart';
+import 'package:campus_wa/presentation/screens/university_classrooms_screen.dart';
+import 'package:campus_wa/presentation/screens/university_detail_screen.dart';
+import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campus_wa/presentation/screens/not_found_screen.dart';
-import 'package:campus_wa/presentation/screens/welcome_screen.dart';
-import '../screens/home_screen.dart';
-import '../screens/university_detail_screen.dart';
-import '../screens/classroom_detail_screen.dart';
-import '../screens/under_development_screen.dart';
-import '../screens/university_classrooms_screen.dart';
 
 /// Configuration principale du router avec GoRouter
 final GoRouter router = GoRouter(
@@ -87,8 +87,9 @@ final GoRouter router = GoRouter(
 
 /// Scaffold principal avec barre de navigation inférieure
 class MainScaffold extends StatelessWidget {
-  final Widget child;
   const MainScaffold({super.key, required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

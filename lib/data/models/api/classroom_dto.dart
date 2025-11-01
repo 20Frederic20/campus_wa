@@ -1,6 +1,6 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/core/exceptions/api_exception.dart';
+import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'classroom_dto.g.dart';
 
@@ -36,9 +36,6 @@ class ClassroomDto {
   @JsonKey(name: 'updated_at')
   final String? updatedAtString;
 
-  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
-  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
-
   const ClassroomDto({
     this.id,
     this.name,
@@ -51,6 +48,31 @@ class ClassroomDto {
     this.createdAtString,
     this.updatedAtString,
   });
+
+  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
+  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
+
+  factory ClassroomDto.fromJson(Map<String, dynamic> json) => _$ClassroomDtoFromJson(json);
+
+  factory ClassroomDto.create({
+    required String universityId,
+    required String name,
+    required String slug,
+    String lng = '',
+    String lat = '',
+    String mainImage = '',
+    List<String> annexesImages = const [],
+  }) {
+    return ClassroomDto(
+      universityId: universityId,
+      name: name,
+      slug: slug,
+      lng: lng,
+      lat: lat,
+      mainImage: mainImage,
+      annexesImages: annexesImages,
+    );
+  }
 
   Classroom toDomain() {
     if (id == null || name == null || slug == null) {
@@ -73,27 +95,5 @@ class ClassroomDto {
     );
   }
 
-  factory ClassroomDto.fromJson(Map<String, dynamic> json) => _$ClassroomDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$ClassroomDtoToJson(this);
-
-  factory ClassroomDto.create({
-    required String universityId,
-    required String name,
-    required String slug,
-    String lng = '',
-    String lat = '',
-    String mainImage = '',
-    List<String> annexesImages = const [],
-  }) {
-    return ClassroomDto(
-      universityId: universityId,
-      name: name,
-      slug: slug,
-      lng: lng,
-      lat: lat,
-      mainImage: mainImage,
-      annexesImages: annexesImages,
-    );
-  }
 }
