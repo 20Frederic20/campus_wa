@@ -24,15 +24,30 @@ class AppColors {
 class AppTheme {
   static final theme = ThemeData(
     useMaterial3: true,
+    scaffoldBackgroundColor: Colors.white, // Fond blanc pour tous les écrans
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
+      seedColor: AppColors.primaryGreen, // Utilisation de votre couleur primaire
       brightness: Brightness.light,
+      background: Colors.white, // Fond blanc pour le thème
+      surface: Colors.white, // Surface blanche pour les cartes et les conteneurs
     ),
     textTheme: GoogleFonts.poppinsTextTheme(),
     appBarTheme: const AppBarTheme(
       centerTitle: true,
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.primaryGreen, // Fond blanc pour la barre d'application
+      foregroundColor: AppColors.white, // Couleur des icônes et du texte
+      titleTextStyle: TextStyle(
+        color: AppColors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      labelTextStyle: MaterialStateProperty.all<TextStyle>(
+        const TextStyle(color: AppColors.white, fontWeight: FontWeight.w500),
+      ),
+      indicatorColor: AppColors.primaryGreen.withOpacity(0.2),
     ),
   );
 }

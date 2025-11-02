@@ -3,6 +3,7 @@ import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:campus_wa/core/theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -153,8 +154,19 @@ class _HomeScreenState extends State<HomeScreen> {
           final filteredUniversities = _filterUniversities(universities, _searchQuery);
           
           if (filteredUniversities.isEmpty) {
-            return const Center(
-              child: Text('Aucune université trouvée'),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Aucune université trouvée'),
+                  SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.refresh),
+                    label: Text('Réessayer'),
+                    onPressed: _loadUniversities,
+                  ),
+                ],
+              ),
             );
           }
 
@@ -164,11 +176,30 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final university = filteredUniversities[index];
               return Card(
+                color: Colors.white,
                 margin: const EdgeInsets.only(bottom: 16),
                 child: ListTile(
-                  title: Text(university.name),
-                  subtitle: Text(university.slug),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  title: Text(
+                    university.name,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  subtitle: Text(
+                    university.slug,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: AppColors.primaryGreen,
+                  ),
                   onTap: () => context.push(
                     '/universities/${university.id}',
                   ),

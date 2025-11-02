@@ -4,6 +4,7 @@ import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/core/utils/error_utils.dart';
 import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/core/theme/app_theme.dart';
 
 class UniversityClassroomsScreen extends StatefulWidget {
 
@@ -45,7 +46,7 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Salles de ${widget.universityName}'),
+        title: Text('Amphi de ${widget.universityName}'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -130,6 +131,7 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    color: AppColors.white,
                     child: ListTile(
                       leading: const Icon(Icons.meeting_room, color: Colors.red),
                       title: Text(
@@ -137,7 +139,11 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(classroom.slug),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios, 
+                        size: 16,
+                        color: AppColors.primaryGreen,
+                      ),
                       onTap: () => context.push('/classrooms/${classroom.id}'),
                     ),
                   ),

@@ -153,8 +153,11 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.map_outlined, size: 20),
-                    label: const Text('Ouvrir dans Google Maps', 
-                      style: TextStyle(fontWeight: FontWeight.w500)),
+                    label: const Text(
+                      'Ouvrir dans Google Maps',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
                     onPressed: hasValidCoords ? () async {
                       try {
                         final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}');
@@ -174,7 +177,14 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                       }
                     } : null,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.textPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      minimumSize: const Size(150, 52), // Largeur minimale de 150
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: AppColors.textPrimary),
+                      ),
                     ),
                   ),
                 ),
@@ -182,14 +192,24 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.directions_outlined, size: 20),
-                    label: const Text('Itinéraire',
-                      style: TextStyle(fontWeight: FontWeight.w500)),
+                    label: const Text(
+                      'Itinéraire',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
                     onPressed: hasValidCoords ? () {
                       // Redirection vers l'écran de développement
                       context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
                     } : null,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.textPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      minimumSize: const Size(150, 52), // Même largeur minimale de 150
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: AppColors.textPrimary),
+                      ),
                     ),
                   ),
                 ),
@@ -199,24 +219,29 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
 
             // Informations de base
             Card(
-              elevation: 2,
+              elevation: 0,
+              color: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Colors.grey.shade200,
+                  width: 1,
+                ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         const Icon(Icons.info_outline, 
-                          color: AppColors.primaryGreen),
+                          color: AppColors.textPrimary),
                         const SizedBox(width: 8),
                         Text(
                           'Détails',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: AppColors.primaryGreen,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -249,9 +274,20 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.meeting_room_outlined, 
-                    color: Colors.white),
+                    color: AppColors.white, size: 20),
                   label: Text(
-                    'Voir la liste des amphi(${university.classroomsCount})',
+                    'Voir la liste des amphi (${university.classroomsCount})',
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryGreen,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   onPressed: () => context.push(
                     '/universities/${university.id}/classrooms',
@@ -271,13 +307,13 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: AppColors.primaryGreen),
+          Icon(icon, size: 20, color: AppColors.textPrimary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -286,7 +322,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                 Text(
                   label.toUpperCase(),
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,

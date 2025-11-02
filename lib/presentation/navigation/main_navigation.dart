@@ -118,26 +118,38 @@ class MainScaffold extends StatelessWidget {
                 ),
                 child: NavigationBar(
                   elevation: 0,
-                  backgroundColor: Colors.white,
-                  indicatorColor: AppColors.primaryGreen.withOpacity(0.2),
+                  backgroundColor: AppColors.primaryGreen,
+                  indicatorColor: Colors.white.withOpacity(0.3),
                   surfaceTintColor: Colors.transparent,
                   labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                  labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // Optional: set the selected text color
+                        );
+                      }
+                      return const TextStyle(color: Colors.white70); // Unselected text style
+                    },
+                  ),
                   selectedIndex: _calculateSelectedIndex(location),
                   onDestinationSelected: (index) => _onItemTapped(context, index),
-                  destinations: const [
+                  destinations: [
                     NavigationDestination(
-                      icon: Icon(Icons.home_outlined, size: 26),
-                      selectedIcon: Icon(Icons.home, size: 26, color: AppColors.primaryGreen),
+                      icon: const Icon(
+                        Icons.home_outlined, size: 26, color: AppColors.white),
+                      selectedIcon: const Icon(Icons.home, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
                       label: 'Accueil',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.search_outlined, size: 26),
-                      selectedIcon: Icon(Icons.search, size: 26, color: AppColors.primaryGreen),
+                      icon: const Icon(Icons.search_outlined, size: 26, color: AppColors.white),
+                      selectedIcon: const Icon(Icons.search, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
                       label: 'Recherche',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.star_outline, size: 26),
-                      selectedIcon: Icon(Icons.star, size: 26, color: AppColors.primaryGreen),
+                      icon: const Icon(Icons.star_outline, size: 26, color: AppColors.white),
+                      selectedIcon: const Icon(Icons.star, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
                       label: 'Favoris',
                     ),
                   ],
