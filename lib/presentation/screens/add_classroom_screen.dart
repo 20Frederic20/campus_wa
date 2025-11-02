@@ -290,14 +290,9 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text(
-                      'Coordonnées (optionnel)',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
                     TextButton.icon(
                       icon: const Icon(Icons.my_location, size: 18),
-                      label: const Text('Ma position'),
+                      label: const Text('Récupérer ma position'),
                       onPressed: _getCurrentLocation,
                     ),
                   ],
