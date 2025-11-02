@@ -1,9 +1,10 @@
 import 'package:campus_wa/core/injection.dart' as di;
+import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/presentation/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campus_wa/core/theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,22 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Universités'),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
+          preferredSize: const Size.fromHeight(70),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
+            padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0), // Ajoutez une marge en bas
+            child: SearchBarWidget(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Rechercher une université...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Theme.of(context).cardColor,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              ),
+              hintText: 'Rechercher une université...',
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.trim();

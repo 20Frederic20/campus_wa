@@ -154,7 +154,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.map_outlined, size: 20),
                     label: const Text(
-                      'Ouvrir dans Google Maps',
+                      'Google Maps',
                       style: TextStyle(fontWeight: FontWeight.w500),
                       textAlign: TextAlign.center,
                     ),
@@ -177,13 +177,13 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                       }
                     } : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.textPrimary,
+                      backgroundColor: AppColors.accentRed,
+                      foregroundColor: AppColors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                       minimumSize: const Size(150, 52), // Largeur minimale de 150
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: AppColors.textPrimary),
+                        side: BorderSide(color: AppColors.white),
                       ),
                     ),
                   ),
@@ -194,7 +194,7 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                     icon: const Icon(Icons.directions_outlined, size: 20),
                     label: const Text(
                       'Itinéraire',
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.white),
                       textAlign: TextAlign.center,
                     ),
                     onPressed: hasValidCoords ? () {
@@ -202,13 +202,13 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                       context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
                     } : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.textPrimary,
+                      backgroundColor: AppColors.accentRed,
+                      foregroundColor: AppColors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                       minimumSize: const Size(150, 52), // Même largeur minimale de 150
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: AppColors.textPrimary),
+                        side: BorderSide(color: AppColors.white),
                       ),
                     ),
                   ),
@@ -279,12 +279,12 @@ class _UniversityDetailScreenState extends State<UniversityDetailScreen> {
                     'Voir la liste des amphi (${university.classroomsCount})',
                     style: const TextStyle(
                       color: AppColors.white,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryGreen,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

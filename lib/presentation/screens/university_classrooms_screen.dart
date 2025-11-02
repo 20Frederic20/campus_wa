@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:campus_wa/domain/models/classroom.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/core/utils/error_utils.dart';
 import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
+import 'package:campus_wa/core/utils/error_utils.dart';
+import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/presentation/widgets/search_bar_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UniversityClassroomsScreen extends StatefulWidget {
 
@@ -50,20 +51,10 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
+            padding: const EdgeInsets.all(16.0),
+            child: SearchBarWidget(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Rechercher une salle...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Theme.of(context).cardColor,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              ),
+              hintText: 'Rechercher une salle...',
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.trim();

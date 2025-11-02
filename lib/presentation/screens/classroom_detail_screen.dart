@@ -185,7 +185,7 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
                         child: ElevatedButton.icon(
                           icon: const Icon(Icons.map_outlined, size: 20),
                           label: const Text(
-                            'Ouvrir dans Google Maps',
+                            'Google Maps',
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                           onPressed: hasValidCoords ? () async {
@@ -207,7 +207,14 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
                             }
                           } : null,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: AppColors.accentRed,
+                            foregroundColor: AppColors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                            minimumSize: const Size(150, 52), // Largeur minimale de 150
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: AppColors.white),
+                            ),
                           ),
                         ),
                       ),
@@ -224,7 +231,14 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
                             context.push('/geolocation', extra: 'Fonctionnalité d\'itinéraire en cours de développement');
                           } : null,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: AppColors.accentRed,
+                            foregroundColor: AppColors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                            minimumSize: const Size(150, 52), // Même largeur minimale de 150
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: AppColors.white),
+                            ),
                           ),
                         ),
                       ),

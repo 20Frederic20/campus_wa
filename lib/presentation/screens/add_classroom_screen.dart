@@ -1,11 +1,13 @@
+import 'dart:io';
 import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
 
 class AddClassroomScreen extends StatefulWidget {
   const AddClassroomScreen({
@@ -53,6 +55,64 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
       setState(() {
         _annexesImagesFiles.add(File(pickedFile.path));
       });
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Vérifier si le service de localisation est activé
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Les services de localisation sont désactivés.'),
+        ),
+      );
+      return;
+    }
+
+    // Vérifier les permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Les permissions de localisation sont nécessaires.'),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Les permissions de localisation sont définitivement refusées.'),
+        ),
+      );
+      return;
+    }
+
+    // Récupérer la position actuelle
+    try {
+      final Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _latController.text = position.latitude.toString();
+        _lngController.text = position.longitude.toString();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la récupération de la position: ${e.toString()}'),
+        ),
+      );
     }
   }
 
@@ -227,6 +287,23 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
                 ),
                 const SizedBox(height: 8),
                 
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Text(
+                      'Coordonnées (optionnel)',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    TextButton.icon(
+                      icon: const Icon(Icons.my_location, size: 18),
+                      label: const Text('Ma position'),
+                      onPressed: _getCurrentLocation,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
                 Row(
                   children: [
                     Expanded(
@@ -235,8 +312,9 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Latitude',
                           border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.location_on, size: 20),
                         ),
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -246,8 +324,9 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Longitude',
                           border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.location_on, size: 20),
                         ),
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
                       ),
                     ),
                   ],
