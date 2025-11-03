@@ -139,9 +139,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
   @override
   Future<List<Classroom>> getUniversityClassrooms(String id) async {
     try {
-      if (_universityCache.containsKey(id)) {
-        return _universityCache[id]!.classrooms;
-      }
+      // if (_universityCache.containsKey(id)) {
+      //   return _universityCache[id]!.classrooms;
+      // }
       final response = await _apiService.get('/universities/$id/classrooms');
       
       if (response.data is Map && response.data['classrooms'] != null) {
