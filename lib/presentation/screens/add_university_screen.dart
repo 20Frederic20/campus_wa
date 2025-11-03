@@ -54,7 +54,7 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
       final response = await di.getIt<UniversityRepository>().createUniversity(university);
       
       if (mounted) {
-        if (response.statusCode == 201) {
+        if (response.id.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Université créée avec succès')),
           );
@@ -62,7 +62,7 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
           Navigator.of(context).pop(true);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur inattendue (${response.statusCode})')),
+            const SnackBar(content: Text('Erreur: Université non créée')),
           );
         }
       }

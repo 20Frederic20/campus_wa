@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 
 class ClassroomRepositoryImpl implements ClassroomRepository {
   final ApiService _apiService;
-  final Map<String, Classroom> _cache = {};
+  final Map<String, Classroom> _classroomCache = {};
 
   ClassroomRepositoryImpl({required ApiService apiService}) : _apiService = apiService;
   
@@ -41,7 +41,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
 
       if (response.data is Map && response.data['classroom'] is Map) {
         final createdClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
-        // _cache[createdClassroom.id] = createdClassroom;
+        _classroomCache[createdClassroom.id] = createdClassroom;
         return createdClassroom;
       }
       throw Exception('Format de réponse inattendu lors de la création de la salle');
@@ -60,13 +60,13 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   @override
   Future<Classroom?> getClassroomById(String id) async {
     try {
-      if (_cache.containsKey(id)) {
-        return _cache[id]!;
+      if (_classroomCache.containsKey(id)) {
+        return _classroomCache[id]!;
       }
       final response = await _apiService.get('/classrooms/$id');
       if (response.data is Map && response.data['classroom'] is Map) {
         final classroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
-        _cache[id] = classroom;
+        _classroomCache[id] = classroom;
         return classroom;
       }
       throw Exception('Format de réponse inattendu');
@@ -93,6 +93,10 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         lng: classroom.lng,
         lat: classroom.lat,
       );
+
+      if (_classroomCache.containsKey(id)) {
+        _classroomCache.remove(id);
+      }
       
       final FormData formData = FormData.fromMap({
         ...dto.toJson(),
@@ -109,6 +113,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
 
       if (response.data is Map && response.data['classroom'] is Map) {
         final updatedClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        _classroomCache[id] = updatedClassroom;
         return updatedClassroom;
       }
       throw Exception('Format de réponse inattendu lors de la mise à jour de la salle');

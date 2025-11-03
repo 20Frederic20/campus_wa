@@ -11,13 +11,14 @@ import 'package:dio/dio.dart';
 
 class UniversityRepositoryImpl implements UniversityRepository {
   final ApiService _apiService;
-  final Map<String, University> _cache = {};
+  final Map<String, University> _universityCache = {};
+  final Map<String, Classroom> _classroomCache = {};
 
   UniversityRepositoryImpl({required ApiService apiService})
     : _apiService = apiService;
 
   @override
-  Future<Response<dynamic>> createUniversity(University university) async {
+  Future<University> createUniversity(University university) async {
     try {
       final dto = UniversityDto.create(
         name: university.name,
@@ -28,7 +29,13 @@ class UniversityRepositoryImpl implements UniversityRepository {
         address: university.address,
       );
       final response = await _apiService.post('/universities', data: dto.toJson());
-      return response;
+      if (response.data is Map && response.data['university'] is Map) {
+        final createdUniversity = UniversityDto.fromJson(response.data['university']).toDomain();
+        _universityCache[createdUniversity.id] = createdUniversity;
+        return createdUniversity;
+      }
+      throw Exception('Format de réponse inattendu lors de la création de l\'université');
+
     } on DioException catch (e) {
       throw ApiException(
         message: 'Erreur lors de la création de l\'université: ${e.message}',
@@ -50,14 +57,22 @@ class UniversityRepositoryImpl implements UniversityRepository {
             if (universities.isEmpty) {
               return [];
             }
-            return universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+            final List<University> list = universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+            for (final university in list) {
+              _universityCache[university.id] = university;
+            }
+            return list;
           } else if (response.data is List) {
             // Si la réponse est directement un tableau
             final List<dynamic> universities = response.data as List<dynamic>;
             if (universities.isEmpty) {
               return [];
             }
-            return universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+            final List<University> list = universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
+            for (final university in list) {
+              _universityCache[university.id] = university;
+            }
+            return list;
           } else {
             throw ApiException(
               message: 'Format de réponse inattendu',
@@ -101,15 +116,15 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
   @override
   Future<University> getUniversityById(String id) async {
-    if (_cache.containsKey(id)) {
-      return _cache[id]!;
+    if (_universityCache.containsKey(id)) {
+      return _universityCache[id]!;
     }
 
     try {
       final response = await _apiService.get('/universities/$id');
       if (response.data is Map && response.data['university'] is Map) {
         final university = UniversityDto.fromJson(response.data['university']).toDomain();
-        _cache[id] = university;
+        _universityCache[id] = university;
         return university;
       }
       throw Exception('Format de réponse inattendue');
@@ -124,20 +139,35 @@ class UniversityRepositoryImpl implements UniversityRepository {
   @override
   Future<List<Classroom>> getUniversityClassrooms(String id) async {
     try {
+      if (_universityCache.containsKey(id)) {
+        return _universityCache[id]!.classrooms;
+      }
       final response = await _apiService.get('/universities/$id/classrooms');
       
       if (response.data is Map && response.data['classrooms'] != null) {
-        return (response.data['classrooms'] as List)
+        final List<Classroom> list = (response.data['classrooms'] as List)
             .map((json) => ClassroomDto.fromJson(json).toDomain())
             .toList();
+        for (final classroom in list) {
+          _classroomCache[classroom.id] = classroom;
+        }
+        return list;
       } else if (response.data is List) {
-        return (response.data as List)
+        final List<Classroom> list = (response.data as List)
             .map((json) => ClassroomDto.fromJson(json).toDomain())
             .toList();
+        for (final classroom in list) {
+          _classroomCache[classroom.id] = classroom;
+        }
+        return list;
       } else if (response.data is Map && response.data['data'] != null) {
-        return (response.data['data'] as List)
+        final List<Classroom> list = (response.data['data'] as List)
             .map((json) => ClassroomDto.fromJson(json).toDomain())
             .toList();
+        for (final classroom in list) {
+          _classroomCache[classroom.id] = classroom;
+        }
+        return list;
       }
       
       throw Exception('Format de réponse inattendu');
@@ -153,13 +183,21 @@ class UniversityRepositoryImpl implements UniversityRepository {
           await _apiService.get('/universities/search', params: {'q': query});
 
       if (response.data is List) {
-        return (response.data as List)
+        final List<University> list = (response.data as List)
             .map((json) => UniversityDto.fromJson(json).toDomain())
             .toList();
+        for (final university in list) {
+          _universityCache[university.id] = university;
+        }
+        return list;
       } else if (response.data is Map && response.data['data'] != null) {
-        return (response.data['data'] as List)
+        final List<University> list = (response.data['data'] as List)
             .map((json) => UniversityDto.fromJson(json).toDomain())
             .toList();
+        for (final university in list) {
+          _universityCache[university.id] = university;
+        }                         
+        return list;
       }
 
       throw Exception('Format de réponse inattendu');
