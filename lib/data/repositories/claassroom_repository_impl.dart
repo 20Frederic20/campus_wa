@@ -77,4 +77,50 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<Classroom> updateClassroom(
+    String id,
+    Classroom classroom,
+    File? mainImage, 
+    {List<File> annexesImages = const []}
+  ) async {
+    try {
+      final dto = ClassroomDto.create(
+        universityId: classroom.universityId,
+        name: classroom.name,
+        slug: classroom.slug,
+        lng: classroom.lng,
+        lat: classroom.lat,
+      );
+      
+      final FormData formData = FormData.fromMap({
+        ...dto.toJson(),
+        '_method': 'PUT', // Important pour les mises à jour
+        if (mainImage != null)
+          'main_image': await MultipartFile.fromFile(mainImage.path, filename: 'mainImage.jpg'),
+        if (annexesImages.isNotEmpty)
+          'annexes[]': await Future.wait(
+            annexesImages.map((file) => MultipartFile.fromFile(file.path, filename: 'annexe_${annexesImages.indexOf(file)}.jpg')),
+          ),
+      });
+
+      final response = await _apiService.post('/classrooms/$id', data: formData);
+
+      if (response.data is Map && response.data['classroom'] is Map) {
+        final updatedClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        return updatedClassroom;
+      }
+      throw Exception('Format de réponse inattendu lors de la mise à jour de la salle');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 422) {
+        final errors = e.response?.data['errors'] ?? {};
+        final errorMessage = errors.entries
+            .map((e) => '${e.key}: ${e.value.join(', ')}')
+            .join('\n');
+        throw Exception(errorMessage.isNotEmpty ? errorMessage : 'Données invalides');
+      }
+      rethrow;
+    }
+  }
 }

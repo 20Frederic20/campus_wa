@@ -7,5 +7,10 @@ abstract class ClassroomRepository {
     File? mainImage,
     {List<File> annexesImages = const []});
   Future<Classroom?> getClassroomById(String id);
-  
+  Future<Classroom> updateClassroom(
+    String id,
+    Classroom classroom,
+    File? mainImage, 
+    {List<File> annexesImages = const []}
+  );
 }

@@ -1,6 +1,8 @@
+import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:campus_wa/presentation/screens/classroom_detail_screen.dart';
+import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
@@ -9,7 +11,6 @@ import 'package:campus_wa/presentation/screens/university_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campus_wa/core/theme/app_theme.dart';
 
 /// Configuration principale du router avec GoRouter
 final GoRouter router = GoRouter(
@@ -44,11 +45,20 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const AddClassroomScreen(),
         ),
         GoRoute(
-          path: '/classrooms/:id',
+          path: '/classrooms/:classroomId',
           builder: (context, state) {
-            final id = state.pathParameters['id']!;
+            final id = state.pathParameters['classroomId']!;
             return ClassroomDetailScreen(
               classroomId: id,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/classrooms/:classroomId/edit',
+          builder: (context, state) {
+            final classroomId = state.pathParameters['classroomId']!;
+            return EditClassroomScreen(
+              classroomId: classroomId,
             );
           },
         ),

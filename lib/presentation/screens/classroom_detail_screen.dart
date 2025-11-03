@@ -45,21 +45,21 @@ class __$ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
     });
   }
 
-  // Future<void> _refreshClassroom() {
-  //   setState(() {
-  //     _classroomFuture = getIt<ClassroomRepository>()
-  //         .getClassroomById(widget.classroomId)
-  //         .then((classroom) {
-  //       debugPrint('Classroom data: $classroom'); // Ajoutez cette ligne
-  //       return classroom;
-  //     });
-  //   });
-  //   return _classroomFuture.then((_) {});
-  // }
+  void _navigateToEditScreen() {
+  context.push('/classrooms/${widget.classroomId}/edit').then((result) {
+    if (result == true) {
+      _loadClassroom(); // Rafraîchir les données après l'édition
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToEditScreen(),
+        child: const Icon(Icons.edit),
+      ),
       appBar: AppBar(
         title: const Text(
           'Détails de l’amphi',
