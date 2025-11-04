@@ -126,9 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMap() {
-    print('🗺️ Building map with key: $_mapKey');
-    print('📍 Position: $_userPosition');
-
     return LeafletMapWidget(
       key: ValueKey(_mapKey),
       center: _userPosition ?? const LatLng(0, 0),
