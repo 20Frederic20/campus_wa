@@ -31,7 +31,21 @@ class SettingsScreen extends StatelessWidget {
             context,
             icon: Icons.description_outlined,
             title: 'Conditions Générales d\'Utilisation',
-            onTap: () => context.go('/cgu'),
+            onTap: () => context.go('/settings/cgu'),
+          ),
+          const Divider(height: 1),
+          _buildListTile(
+            context,
+            icon: Icons.privacy_tip_outlined,
+            title: 'Politique de confidentialité',
+            onTap: () => context.go('/settings/privacy'),
+          ),
+          const Divider(height: 1),
+          _buildListTile(
+            context,
+            icon: Icons.help_outline,
+            title: 'Centre d\'aide',
+            onTap: () => context.go('/settings/help'),
           ),
           const Divider(height: 1),
           // Ajoutez d'autres éléments de menu ici
