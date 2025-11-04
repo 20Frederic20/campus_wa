@@ -7,11 +7,20 @@ import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:dio/dio.dart';
 
 class ClassroomRepositoryImpl implements ClassroomRepository {
-  final ApiService _apiService;
-  final Map<String, Classroom> _classroomCache = {};
 
   ClassroomRepositoryImpl({required ApiService apiService}) : _apiService = apiService;
   
+  final ApiService _apiService;
+  final Map<String, Classroom> _classroomCache = {};
+  
+  // Helper : est-ce une erreur réseau ?
+  bool _isNetworkError(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.error is SocketException;
+  }
   @override
   Future<Classroom> createClassroom(
     Classroom classroom,
@@ -31,7 +40,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         if (mainImage != null)
           'main_image': await MultipartFile.fromFile(mainImage.path, filename: 'mainImage.jpg'),
         if (annexesImages.isNotEmpty)
-          'annexes': await Future.wait(
+          'annexes[]': await Future.wait(
             annexesImages.map((file) => MultipartFile.fromFile(file.path, filename: 'annexe_${annexesImages.indexOf(file)}.jpg')),
           ),
       });
@@ -125,6 +134,22 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
             .join('\n');
         throw Exception(errorMessage.isNotEmpty ? errorMessage : 'Données invalides');
       }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Classroom>?> searchClassrooms(String query) async {
+    try {
+      final response = await _apiService.get('/classrooms', params: {'search': query});
+      if (response.data is Map && response.data['classrooms'] is List) {
+        final dtos = response.data['classrooms'].map((j) => ClassroomDto.fromJson(j as Map<String, dynamic>)).toList();
+        final domainList = dtos.map((d) => d.toDomain()).toList();
+        return domainList;
+      }
+      return null;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) return null;
       rethrow;
     }
   }

@@ -64,7 +64,7 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Classroom>>(
+      body: FutureBuilder<List<Classroom>?>(
         future: di.getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

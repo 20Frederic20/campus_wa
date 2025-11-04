@@ -135,7 +135,7 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
     try {
       final universities = await di.getIt<UniversityRepository>().getUniversities();
       setState(() {
-        _universities = universities;
+        _universities = universities!;
         _selectedUniversityId = widget.universityId ?? 
             (universities.isNotEmpty ? universities.first.id : null);
         _isLoadingUniversities = false;

@@ -13,4 +13,5 @@ abstract class ClassroomRepository {
     File? mainImage, 
     {List<File> annexesImages = const []}
   );
+  Future<List<Classroom>?> searchClassrooms(String query);
 }

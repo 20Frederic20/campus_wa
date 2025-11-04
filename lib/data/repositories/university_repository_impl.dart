@@ -1,24 +1,45 @@
+import 'dart:developer';
+import 'dart:io'; // Pour SocketException
 import 'package:campus_wa/core/exceptions/api_exception.dart';
 import 'package:campus_wa/data/models/api/classroom_dto.dart';
 import 'package:campus_wa/data/models/api/university_dto.dart';
 import 'package:campus_wa/data/services/api_service.dart';
+import 'package:campus_wa/domain/local/classroom_local_datasource.dart';
+import 'package:campus_wa/domain/local/university_local_datasource.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:dio/dio.dart';
 
-
-
 class UniversityRepositoryImpl implements UniversityRepository {
+
+  UniversityRepositoryImpl({
+    required ApiService apiService,
+    required UniversityLocalDataSource universityLocal,
+    required ClassroomLocalDataSource classroomLocal,
+  })  : _apiService = apiService,
+        _universityLocal = universityLocal,
+        _classroomLocal = classroomLocal;
   final ApiService _apiService;
+  final UniversityLocalDataSource _universityLocal;
+  final ClassroomLocalDataSource _classroomLocal;
+
+  // Cache mémoire (pour getById rapide)
   final Map<String, University> _universityCache = {};
   final Map<String, Classroom> _classroomCache = {};
 
-  UniversityRepositoryImpl({required ApiService apiService})
-    : _apiService = apiService;
+  // Helper : est-ce une erreur réseau ?
+  bool _isNetworkError(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.error is SocketException;
+  }
 
   @override
   Future<University> createUniversity(University university) async {
+    // Pas de fallback pour création (besoin serveur)
     try {
       final dto = UniversityDto.create(
         name: university.name,
@@ -30,94 +51,71 @@ class UniversityRepositoryImpl implements UniversityRepository {
       );
       final response = await _apiService.post('/universities', data: dto.toJson());
       if (response.data is Map && response.data['university'] is Map) {
-        final createdUniversity = UniversityDto.fromJson(response.data['university']).toDomain();
-        _universityCache[createdUniversity.id] = createdUniversity;
-        return createdUniversity;
+        final created = UniversityDto.fromJson(response.data['university']).toDomain();
+        _universityCache[created.id] = created;
+        // Mise à jour cache local (rafraîchir liste)
+        final remoteList = await getUniversities(); // ignore fallback ici
+        if (remoteList != null) {
+          await _universityLocal.cacheUniversities(remoteList.map((u) => UniversityDto.fromDomain(u)).toList());
+        } else {
+          // Handle the case where remoteList is null, maybe log a warning or skip caching
+          log('Warning: Could not fetch universities list for caching');
+        }
+        return created;
       }
-      throw Exception('Format de réponse inattendu lors de la création de l\'université');
-
+      throw Exception('Format de réponse inattendu');
     } on DioException catch (e) {
       throw ApiException(
-        message: 'Erreur lors de la création de l\'université: ${e.message}',
+        message: 'Erreur lors de la création: ${e.message}',
         statusCode: e.response?.statusCode,
       );
     }
   }
 
   @override
-  Future<List<University>> getUniversities() async {
+  Future<List<University>?> getUniversities() async {
     try {
-      final response = await _apiService.get('/universities');
+      final response = await _apiService.get('/universities').timeout(const Duration(seconds: 12));
 
       if (response.statusCode == 200) {
-        try {
-          // Vérifier si la réponse contient un tableau 'universities'
-          if (response.data is Map && response.data['universities'] is List) {
-            final List<dynamic> universities = response.data['universities'] as List<dynamic>;
-            if (universities.isEmpty) {
-              return [];
-            }
-            final List<University> list = universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
-            for (final university in list) {
-              _universityCache[university.id] = university;
-            }
-            return list;
-          } else if (response.data is List) {
-            // Si la réponse est directement un tableau
-            final List<dynamic> universities = response.data as List<dynamic>;
-            if (universities.isEmpty) {
-              return [];
-            }
-            final List<University> list = universities.map((json) => UniversityDto.fromJson(json).toDomain()).toList();
-            for (final university in list) {
-              _universityCache[university.id] = university;
-            }
-            return list;
-          } else {
-            throw ApiException(
-              message: 'Format de réponse inattendu',
-              statusCode: response.statusCode,
-            );
-          }
-        } catch (e) {
-          throw ApiException(
-            message: 'Erreur lors du traitement des données: ${e.toString()}',
-            statusCode: response.statusCode,
-          );
+        List<dynamic> rawList = [];
+        if (response.data is Map && response.data['universities'] is List) {
+          rawList = response.data['universities'];
+        } else if (response.data is List) {
+          rawList = response.data;
+        } else {
+          throw ApiException(message: 'Format inattendu', statusCode: 200);
         }
-      }
 
-      throw ApiException(
-        message: 'Échec de la récupération des universités (${response.statusCode})',
-        statusCode: response.statusCode,
-      );
-    } on DioException catch (e) {
-      // Gestion spécifique des erreurs de connexion
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.sendTimeout) {
-        throw ApiException(
-          message: 'Erreur de connexion au serveur. Vérifiez votre connexion internet.',
-          statusCode: 408, // Request Timeout
-        );
+        final dtos = rawList.map((j) => UniversityDto.fromJson(j as Map<String, dynamic>)).toList();
+        final domainList = dtos.map((d) => d.toDomain()).toList();
+
+        // Cache mémoire + persistant
+        for (final u in domainList) _universityCache[u.id] = u;
+        await _universityLocal.cacheUniversities(dtos);
+
+        return domainList;
       }
-      // Autres erreurs Dio
-      throw ApiException(
-        message: 'Erreur réseau: ${e.message}',
-        statusCode: e.response?.statusCode,
-      );
+      throw ApiException(message: 'Échec (${response.statusCode})', statusCode: response.statusCode);
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        // Fallback local
+        final cachedDtos = await _universityLocal.getCachedUniversities();
+        if (cachedDtos == null) return null;
+        final domainList = cachedDtos.map((d) => d.toDomain()).toList();
+        for (final u in domainList) _universityCache[u.id] = u;
+        return domainList;
+      }
+      throw ApiException(message: 'Erreur réseau: ${e.message}', statusCode: e.response?.statusCode);
     } catch (e) {
-      // Toutes les autres erreurs
-      throw ApiException(
-        message: 'Erreur inattendue: ${e.toString()}',
-      );
+      throw ApiException(message: 'Erreur inattendue: $e');
     }
   }
 
   @override
-  Future<University> getUniversityById(String id) async {
+  Future<University?> getUniversityById(String id) async {
     if (_universityCache.containsKey(id)) {
-      return _universityCache[id]!;
+      return _universityCache[id];
     }
 
     try {
@@ -127,82 +125,63 @@ class UniversityRepositoryImpl implements UniversityRepository {
         _universityCache[id] = university;
         return university;
       }
-      throw Exception('Format de réponse inattendue');
+      return null;
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        throw Exception('Université non trouvée');
-      }
+      if (_isNetworkError(e)) return null;
+      if (e.response?.statusCode == 404) return null;
       rethrow;
     }
   }
 
   @override
-  Future<List<Classroom>> getUniversityClassrooms(String id) async {
+  Future<List<Classroom>?> getUniversityClassrooms(String universityId) async {
     try {
-      // if (_universityCache.containsKey(id)) {
-      //   return _universityCache[id]!.classrooms;
-      // }
-      final response = await _apiService.get('/universities/$id/classrooms');
-      
-      if (response.data is Map && response.data['classrooms'] != null) {
-        final List<Classroom> list = (response.data['classrooms'] as List)
-            .map((json) => ClassroomDto.fromJson(json).toDomain())
-            .toList();
-        for (final classroom in list) {
-          _classroomCache[classroom.id] = classroom;
-        }
-        return list;
+      final response = await _apiService.get('/universities/$universityId/classrooms');
+
+      List<dynamic> rawList = [];
+      if (response.data is Map && response.data['classrooms'] is List) {
+        rawList = response.data['classrooms'];
       } else if (response.data is List) {
-        final List<Classroom> list = (response.data as List)
-            .map((json) => ClassroomDto.fromJson(json).toDomain())
-            .toList();
-        for (final classroom in list) {
-          _classroomCache[classroom.id] = classroom;
-        }
-        return list;
-      } else if (response.data is Map && response.data['data'] != null) {
-        final List<Classroom> list = (response.data['data'] as List)
-            .map((json) => ClassroomDto.fromJson(json).toDomain())
-            .toList();
-        for (final classroom in list) {
-          _classroomCache[classroom.id] = classroom;
-        }
-        return list;
+        rawList = response.data;
+      } else if (response.data is Map && response.data['data'] is List) {
+        rawList = response.data['data'];
+      } else {
+        throw Exception('Format inattendu');
       }
-      
-      throw Exception('Format de réponse inattendu');
-    } on DioException {
+
+      final dtos = rawList.map((j) => ClassroomDto.fromJson(j as Map<String, dynamic>)).toList();
+      final domainList = dtos.map((d) => d.toDomain()).toList();
+
+      for (final c in domainList) _classroomCache[c.id] = c;
+      await _classroomLocal.cacheClassroomsByUniversityId(universityId, dtos);
+
+      return domainList;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        final cachedDtos = await _classroomLocal.getCachedClassroomsByUniversityId(universityId);
+        if (cachedDtos == null) return null;
+        final domainList = cachedDtos.map((d) => d.toDomain()).toList();
+        for (final c in domainList) _classroomCache[c.id] = c;
+        return domainList;
+      }
       rethrow;
     }
   }
 
   @override
-  Future<List<University>> searchUniversities(String query) async {
+  Future<List<University>?> searchUniversities(String query) async {
     try {
-      final response =
-          await _apiService.get('/universities/search', params: {'q': query});
-
-      if (response.data is List) {
-        final List<University> list = (response.data as List)
-            .map((json) => UniversityDto.fromJson(json).toDomain())
-            .toList();
-        for (final university in list) {
-          _universityCache[university.id] = university;
-        }
-        return list;
-      } else if (response.data is Map && response.data['data'] != null) {
-        final List<University> list = (response.data['data'] as List)
-            .map((json) => UniversityDto.fromJson(json).toDomain())
-            .toList();
-        for (final university in list) {
-          _universityCache[university.id] = university;
-        }                         
-        return list;
+      final response = await _apiService.get('/universities', params: {'search': query});
+      if (response.data is Map && response.data['universities'] is List) {
+        final dtos = response.data['universities'].map((j) => UniversityDto.fromJson(j as Map<String, dynamic>)).toList();
+        final domainList = dtos.map((d) => d.toDomain()).toList();
+        return domainList;
       }
-
-      throw Exception('Format de réponse inattendu');
-    } on DioException {
+      return null;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) return null;
       rethrow;
     }
   }
+
 }
