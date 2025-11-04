@@ -1,17 +1,16 @@
+import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
+import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/presentation/widgets/search_bar_widget.dart';
+import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
 import 'package:campus_wa/presentation/widgets/university_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
-import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campus_wa/core/injection.dart' as di;
-import 'package:campus_wa/domain/models/university.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

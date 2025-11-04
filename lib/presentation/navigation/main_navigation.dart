@@ -4,8 +4,10 @@ import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:campus_wa/presentation/screens/cgu_screen.dart';
 import 'package:campus_wa/presentation/screens/classroom_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
+import 'package:campus_wa/presentation/screens/help_center_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
+import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
 import 'package:campus_wa/presentation/screens/settings_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
 import 'package:campus_wa/presentation/screens/university_classrooms_screen.dart';
@@ -90,12 +92,28 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Geolocation'),
         ),
         GoRoute(
-          path: '/cgu',
+          path: '/settings',
+          builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: '/settings/cgu',
           builder: (context, state) => const CguScreen(),
         ),
         GoRoute(
-          path: '/settings',
-          builder: (context, state) => const SettingsScreen(),
+          path: '/settings/help',
+          builder: (context, state) => const HelpCenterScreen(),
+        ),
+        GoRoute(
+          path: '/settings/help/guide',
+          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Guide de prise en main'),
+        ),
+        GoRoute(
+          path: '/settings/help/advanced',
+          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Fonctionnalités avancées'),
+        ),
+        GoRoute(
+          path: '/settings/privacy',
+          builder: (context, state) => const PrivacyPolicyScreen(),
         ),
         GoRoute(
           path: ':splat(.*)',
@@ -163,13 +181,13 @@ class MainScaffold extends StatelessWidget {
                       label: 'Accueil',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.search_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: Icon(Icons.search, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
-                      label: 'Planning',
+                      icon: Icon(Icons.calendar_today_outlined, size: 26, color: AppColors.white),
+                      selectedIcon: Icon(Icons.calendar_today, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      label: 'Plannings',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.star_outline, size: 26, color: AppColors.white),
-                      selectedIcon: Icon(Icons.star, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      icon: Icon(Icons.settings_outlined, size: 26, color: AppColors.white),
+                      selectedIcon: Icon(Icons.settings, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
                       label: 'Paramètres',
                     ),
                   ],
@@ -181,15 +199,13 @@ class MainScaffold extends StatelessWidget {
 
   /// Calcule quel onglet est sélectionné
   static int _calculateSelectedIndex(String location) {
-    if (location == '/home' || 
-        location.startsWith('/universities/') || 
-        location == '/universities/add') {
-          return 0;
-        }
-    if (location.startsWith('/planning')) {
+    if (location == '/home' ||  location.startsWith('/universities/') || location == '/universities/add') {
+      return 0;
+    }
+    else if (location.startsWith('/plannings')) {
       return 1;
     }
-    if (location.startsWith('/settings')) {
+    else if (location.startsWith('/settings') || location.startsWith('/settings/cgu')) {
       return 2;
     }
     return 0; // par défaut
@@ -202,7 +218,7 @@ class MainScaffold extends StatelessWidget {
         context.go('/home');
         break;
       case 1:
-        context.go('/planning');
+        context.go('/plannings');
         break;
       case 2:
         context.go('/settings');
