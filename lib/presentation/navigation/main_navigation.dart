@@ -1,10 +1,12 @@
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
+import 'package:campus_wa/presentation/screens/cgu_screen.dart';
 import 'package:campus_wa/presentation/screens/classroom_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
+import 'package:campus_wa/presentation/screens/settings_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
 import 'package:campus_wa/presentation/screens/university_classrooms_screen.dart';
 import 'package:campus_wa/presentation/screens/university_detail_screen.dart';
@@ -88,6 +90,14 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Geolocation'),
         ),
         GoRoute(
+          path: '/cgu',
+          builder: (context, state) => const CguScreen(),
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
           path: ':splat(.*)',
           builder: (context, state) => const NotFoundScreen(),
         ),
@@ -115,7 +125,7 @@ class MainScaffold extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -129,12 +139,12 @@ class MainScaffold extends StatelessWidget {
                 child: NavigationBar(
                   elevation: 0,
                   backgroundColor: AppColors.primaryGreen,
-                  indicatorColor: Colors.white.withOpacity(0.3),
+                  indicatorColor: Colors.white.withValues(alpha: 0.3),
                   surfaceTintColor: Colors.transparent,
                   labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                  labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.selected)) {
+                  labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+                    (Set<WidgetState> states) {
+                      if (states.contains(WidgetState.selected)) {
                         return const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white, // Optional: set the selected text color
@@ -146,21 +156,21 @@ class MainScaffold extends StatelessWidget {
                   selectedIndex: _calculateSelectedIndex(location),
                   onDestinationSelected: (index) => _onItemTapped(context, index),
                   destinations: [
-                    NavigationDestination(
-                      icon: const Icon(
+                    const NavigationDestination(
+                      icon: Icon(
                         Icons.home_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: const Icon(Icons.home, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      selectedIcon: Icon(Icons.home, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
                       label: 'Accueil',
                     ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.search_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: const Icon(Icons.search, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
-                      label: 'Recherche',
+                    const NavigationDestination(
+                      icon: Icon(Icons.search_outlined, size: 26, color: AppColors.white),
+                      selectedIcon: Icon(Icons.search, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      label: 'Planning',
                     ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.star_outline, size: 26, color: AppColors.white),
-                      selectedIcon: const Icon(Icons.star, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
-                      label: 'Favoris',
+                    const NavigationDestination(
+                      icon: Icon(Icons.star_outline, size: 26, color: AppColors.white),
+                      selectedIcon: Icon(Icons.star, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      label: 'Paramètres',
                     ),
                   ],
                 ),
@@ -173,9 +183,15 @@ class MainScaffold extends StatelessWidget {
   static int _calculateSelectedIndex(String location) {
     if (location == '/home' || 
         location.startsWith('/universities/') || 
-        location == '/universities/add') return 0;
-    if (location.startsWith('/search')) return 1;
-    if (location.startsWith('/favorites')) return 2;
+        location == '/universities/add') {
+          return 0;
+        }
+    if (location.startsWith('/planning')) {
+      return 1;
+    }
+    if (location.startsWith('/settings')) {
+      return 2;
+    }
     return 0; // par défaut
   }
 
@@ -186,10 +202,10 @@ class MainScaffold extends StatelessWidget {
         context.go('/home');
         break;
       case 1:
-        context.go('/search');
+        context.go('/planning');
         break;
       case 2:
-        context.go('/favorites');
+        context.go('/settings');
         break;
     }
   }
