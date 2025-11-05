@@ -3,6 +3,7 @@ import 'package:campus_wa/data/local/university_local_datasource_impl.dart';
 import 'package:campus_wa/data/repositories/claassroom_repository_impl.dart';
 import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/data/services/api_service.dart';
+import 'package:campus_wa/data/services/search_service.dart';
 import 'package:campus_wa/domain/local/classroom_local_datasource.dart';
 import 'package:campus_wa/domain/local/university_local_datasource.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
@@ -15,23 +16,35 @@ final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
   // Configuration de Dio avec des options de base
-  final dio = Dio(BaseOptions(
-    baseUrl: dotenv.get('API_BASE_URL', fallback: 'http://localhost:3000'),
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-  ));
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: dotenv.get('API_BASE_URL', fallback: 'http://localhost:3000'),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   // Enregistrement des dépendances
   getIt
     ..registerSingleton<Dio>(dio)
     ..registerSingleton<ApiService>(ApiService())
-    ..registerLazySingleton<UniversityLocalDataSource>(() => UniversityLocalDataSourceImpl())
-    ..registerLazySingleton<ClassroomLocalDataSource>(() => ClassroomLocalDataSourceImpl())
+    ..registerLazySingleton<UniversityLocalDataSource>(
+      () => UniversityLocalDataSourceImpl(),
+    )
+    ..registerLazySingleton<ClassroomLocalDataSource>(
+      () => ClassroomLocalDataSourceImpl(),
+    )
+    ..registerLazySingleton<SearchService>(
+      () => SearchService(
+        getIt<UniversityRepository>(),
+        getIt<ClassroomRepository>(),
+      ),
+    )
     ..registerLazySingleton<UniversityRepository>(
       () => UniversityRepositoryImpl(
-        apiService: getIt<ApiService>(), 
+        apiService: getIt<ApiService>(),
         universityLocal: getIt<UniversityLocalDataSource>(),
-        classroomLocal: getIt<ClassroomLocalDataSource>()
+        classroomLocal: getIt<ClassroomLocalDataSource>(),
       ),
     )
     ..registerLazySingleton<ClassroomRepository>(
