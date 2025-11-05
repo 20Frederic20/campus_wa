@@ -12,14 +12,13 @@ import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:dio/dio.dart';
 
 class UniversityRepositoryImpl implements UniversityRepository {
-
   UniversityRepositoryImpl({
     required ApiService apiService,
     required UniversityLocalDataSource universityLocal,
     required ClassroomLocalDataSource classroomLocal,
-  })  : _apiService = apiService,
-        _universityLocal = universityLocal,
-        _classroomLocal = classroomLocal;
+  }) : _apiService = apiService,
+       _universityLocal = universityLocal,
+       _classroomLocal = classroomLocal;
   final ApiService _apiService;
   final UniversityLocalDataSource _universityLocal;
   final ClassroomLocalDataSource _classroomLocal;
@@ -49,14 +48,21 @@ class UniversityRepositoryImpl implements UniversityRepository {
         lat: university.lat,
         address: university.address,
       );
-      final response = await _apiService.post('/universities', data: dto.toJson());
+      final response = await _apiService.post(
+        '/universities',
+        data: dto.toJson(),
+      );
       if (response.data is Map && response.data['university'] is Map) {
-        final created = UniversityDto.fromJson(response.data['university']).toDomain();
+        final created = UniversityDto.fromJson(
+          response.data['university'],
+        ).toDomain();
         _universityCache[created.id] = created;
         // Mise à jour cache local (rafraîchir liste)
         final remoteList = await getUniversities(); // ignore fallback ici
         if (remoteList != null) {
-          await _universityLocal.cacheUniversities(remoteList.map((u) => UniversityDto.fromDomain(u)).toList());
+          await _universityLocal.cacheUniversities(
+            remoteList.map((u) => UniversityDto.fromDomain(u)).toList(),
+          );
         } else {
           // Handle the case where remoteList is null, maybe log a warning or skip caching
           log('Warning: Could not fetch universities list for caching');
@@ -73,9 +79,14 @@ class UniversityRepositoryImpl implements UniversityRepository {
   }
 
   @override
-  Future<List<University>?> getUniversities() async {
+  Future<List<University>?> getUniversities({String? query}) async {
     try {
-      final response = await _apiService.get('/universities').timeout(const Duration(seconds: 12));
+      final response = await _apiService
+          .get(
+            '/universities',
+            params: query != null ? {'search': query} : null,
+          )
+          .timeout(const Duration(seconds: 12));
 
       if (response.statusCode == 200) {
         List<dynamic> rawList = [];
@@ -87,7 +98,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
           throw ApiException(message: 'Format inattendu', statusCode: 200);
         }
 
-        final dtos = rawList.map((j) => UniversityDto.fromJson(j as Map<String, dynamic>)).toList();
+        final dtos = rawList
+            .map((j) => UniversityDto.fromJson(j as Map<String, dynamic>))
+            .toList();
         final domainList = dtos.map((d) => d.toDomain()).toList();
 
         // Cache mémoire + persistant
@@ -96,7 +109,10 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
         return domainList;
       }
-      throw ApiException(message: 'Échec (${response.statusCode})', statusCode: response.statusCode);
+      throw ApiException(
+        message: 'Échec (${response.statusCode})',
+        statusCode: response.statusCode,
+      );
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
         // Fallback local
@@ -106,7 +122,10 @@ class UniversityRepositoryImpl implements UniversityRepository {
         for (final u in domainList) _universityCache[u.id] = u;
         return domainList;
       }
-      throw ApiException(message: 'Erreur réseau: ${e.message}', statusCode: e.response?.statusCode);
+      throw ApiException(
+        message: 'Erreur réseau: ${e.message}',
+        statusCode: e.response?.statusCode,
+      );
     } catch (e) {
       throw ApiException(message: 'Erreur inattendue: $e');
     }
@@ -121,7 +140,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
     try {
       final response = await _apiService.get('/universities/$id');
       if (response.data is Map && response.data['university'] is Map) {
-        final university = UniversityDto.fromJson(response.data['university']).toDomain();
+        final university = UniversityDto.fromJson(
+          response.data['university'],
+        ).toDomain();
         _universityCache[id] = university;
         return university;
       }
@@ -136,7 +157,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
   @override
   Future<List<Classroom>?> getUniversityClassrooms(String universityId) async {
     try {
-      final response = await _apiService.get('/universities/$universityId/classrooms');
+      final response = await _apiService.get(
+        '/universities/$universityId/classrooms',
+      );
 
       List<dynamic> rawList = [];
       if (response.data is Map && response.data['classrooms'] is List) {
@@ -149,7 +172,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
         throw Exception('Format inattendu');
       }
 
-      final dtos = rawList.map((j) => ClassroomDto.fromJson(j as Map<String, dynamic>)).toList();
+      final dtos = rawList
+          .map((j) => ClassroomDto.fromJson(j as Map<String, dynamic>))
+          .toList();
       final domainList = dtos.map((d) => d.toDomain()).toList();
 
       for (final c in domainList) _classroomCache[c.id] = c;
@@ -158,7 +183,8 @@ class UniversityRepositoryImpl implements UniversityRepository {
       return domainList;
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
-        final cachedDtos = await _classroomLocal.getCachedClassroomsByUniversityId(universityId);
+        final cachedDtos = await _classroomLocal
+            .getCachedClassroomsByUniversityId(universityId);
         if (cachedDtos == null) return null;
         final domainList = cachedDtos.map((d) => d.toDomain()).toList();
         for (final c in domainList) _classroomCache[c.id] = c;
@@ -167,21 +193,4 @@ class UniversityRepositoryImpl implements UniversityRepository {
       rethrow;
     }
   }
-
-  @override
-  Future<List<University>?> searchUniversities(String query) async {
-    try {
-      final response = await _apiService.get('/universities', params: {'search': query});
-      if (response.data is Map && response.data['universities'] is List) {
-        final dtos = response.data['universities'].map((j) => UniversityDto.fromJson(j as Map<String, dynamic>)).toList();
-        final domainList = dtos.map((d) => d.toDomain()).toList();
-        return domainList;
-      }
-      return null;
-    } on DioException catch (e) {
-      if (_isNetworkError(e)) return null;
-      rethrow;
-    }
-  }
-
 }
