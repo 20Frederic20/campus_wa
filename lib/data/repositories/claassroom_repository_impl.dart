@@ -7,12 +7,12 @@ import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:dio/dio.dart';
 
 class ClassroomRepositoryImpl implements ClassroomRepository {
+  ClassroomRepositoryImpl({required ApiService apiService})
+    : _apiService = apiService;
 
-  ClassroomRepositoryImpl({required ApiService apiService}) : _apiService = apiService;
-  
   final ApiService _apiService;
   final Map<String, Classroom> _classroomCache = {};
-  
+
   // Helper : est-ce une erreur réseau ?
   bool _isNetworkError(DioException e) {
     return e.type == DioExceptionType.connectionTimeout ||
@@ -21,12 +21,13 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         e.type == DioExceptionType.connectionError ||
         e.error is SocketException;
   }
+
   @override
   Future<Classroom> createClassroom(
     Classroom classroom,
-    File? mainImage,
-    {List<File> annexesImages = const []}
-  ) async {
+    File? mainImage, {
+    List<File> annexesImages = const [],
+  }) async {
     try {
       final dto = ClassroomDto.create(
         universityId: classroom.universityId,
@@ -38,10 +39,18 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       FormData formData = FormData.fromMap({
         ...dto.toJson(),
         if (mainImage != null)
-          'main_image': await MultipartFile.fromFile(mainImage.path, filename: 'mainImage.jpg'),
+          'main_image': await MultipartFile.fromFile(
+            mainImage.path,
+            filename: 'mainImage.jpg',
+          ),
         if (annexesImages.isNotEmpty)
           'annexes[]': await Future.wait(
-            annexesImages.map((file) => MultipartFile.fromFile(file.path, filename: 'annexe_${annexesImages.indexOf(file)}.jpg')),
+            annexesImages.map(
+              (file) => MultipartFile.fromFile(
+                file.path,
+                filename: 'annexe_${annexesImages.indexOf(file)}.jpg',
+              ),
+            ),
           ),
       });
 
@@ -49,18 +58,24 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       final response = await _apiService.post('/classrooms', data: formData);
 
       if (response.data is Map && response.data['classroom'] is Map) {
-        final createdClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        final createdClassroom = ClassroomDto.fromJson(
+          response.data['classroom'],
+        ).toDomain();
         _classroomCache[createdClassroom.id] = createdClassroom;
         return createdClassroom;
       }
-      throw Exception('Format de réponse inattendu lors de la création de la salle');
+      throw Exception(
+        'Format de réponse inattendu lors de la création de la salle',
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 422) {
         final errors = e.response?.data['errors'] ?? {};
         final errorMessage = errors.entries
             .map((e) => '${e.key}: ${e.value.join(', ')}')
             .join('\n');
-        throw Exception(errorMessage.isNotEmpty ? errorMessage : 'Données invalides');
+        throw Exception(
+          errorMessage.isNotEmpty ? errorMessage : 'Données invalides',
+        );
       }
       rethrow;
     }
@@ -74,7 +89,9 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       }
       final response = await _apiService.get('/classrooms/$id');
       if (response.data is Map && response.data['classroom'] is Map) {
-        final classroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        final classroom = ClassroomDto.fromJson(
+          response.data['classroom'],
+        ).toDomain();
         _classroomCache[id] = classroom;
         return classroom;
       }
@@ -91,9 +108,9 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   Future<Classroom> updateClassroom(
     String id,
     Classroom classroom,
-    File? mainImage, 
-    {List<File> annexesImages = const []}
-  ) async {
+    File? mainImage, {
+    List<File> annexesImages = const [],
+  }) async {
     try {
       final dto = ClassroomDto.create(
         universityId: classroom.universityId,
@@ -106,45 +123,74 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       if (_classroomCache.containsKey(id)) {
         _classroomCache.remove(id);
       }
-      
+
       final FormData formData = FormData.fromMap({
         ...dto.toJson(),
         '_method': 'PUT', // Important pour les mises à jour
         if (mainImage != null)
-          'main_image': await MultipartFile.fromFile(mainImage.path, filename: 'mainImage.jpg'),
+          'main_image': await MultipartFile.fromFile(
+            mainImage.path,
+            filename: 'mainImage.jpg',
+          ),
         if (annexesImages.isNotEmpty)
           'annexes[]': await Future.wait(
-            annexesImages.map((file) => MultipartFile.fromFile(file.path, filename: 'annexe_${annexesImages.indexOf(file)}.jpg')),
+            annexesImages.map(
+              (file) => MultipartFile.fromFile(
+                file.path,
+                filename: 'annexe_${annexesImages.indexOf(file)}.jpg',
+              ),
+            ),
           ),
       });
 
-      final response = await _apiService.post('/classrooms/$id', data: formData);
+      final response = await _apiService.post(
+        '/classrooms/$id',
+        data: formData,
+      );
 
       if (response.data is Map && response.data['classroom'] is Map) {
-        final updatedClassroom = ClassroomDto.fromJson(response.data['classroom']).toDomain();
+        final updatedClassroom = ClassroomDto.fromJson(
+          response.data['classroom'],
+        ).toDomain();
         _classroomCache[id] = updatedClassroom;
         return updatedClassroom;
       }
-      throw Exception('Format de réponse inattendu lors de la mise à jour de la salle');
+      throw Exception(
+        'Format de réponse inattendu lors de la mise à jour de la salle',
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 422) {
         final errors = e.response?.data['errors'] ?? {};
         final errorMessage = errors.entries
             .map((e) => '${e.key}: ${e.value.join(', ')}')
             .join('\n');
-        throw Exception(errorMessage.isNotEmpty ? errorMessage : 'Données invalides');
+        throw Exception(
+          errorMessage.isNotEmpty ? errorMessage : 'Données invalides',
+        );
       }
       rethrow;
     }
   }
 
   @override
-  Future<List<Classroom>?> searchClassrooms(String query) async {
+  Future<List<Classroom>?> getClassrooms({String? query}) async {
     try {
-      final response = await _apiService.get('/classrooms', params: {'search': query});
-      if (response.data is Map && response.data['classrooms'] is List) {
-        final dtos = response.data['classrooms'].map((j) => ClassroomDto.fromJson(j as Map<String, dynamic>)).toList();
-        final domainList = dtos.map((d) => d.toDomain()).toList();
+      final response = await _apiService.get(
+        '/classrooms?',
+        params: query != null ? {'search': query} : null,
+      );
+      if (response.data is Map<String, dynamic> &&
+          response.data['classrooms'] is List) {
+        final List<dynamic> jsonList =
+            response.data['classrooms'] as List<dynamic>;
+        final List<ClassroomDto> dtos = jsonList
+            .map<ClassroomDto>(
+              (dynamic j) => ClassroomDto.fromJson(j as Map<String, dynamic>),
+            )
+            .toList();
+        final List<Classroom> domainList = dtos
+            .map<Classroom>((ClassroomDto d) => d.toDomain())
+            .toList();
         return domainList;
       }
       return null;
