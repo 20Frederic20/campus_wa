@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final SearchController _searchController = SearchController();
   String _searchQuery = '';
+  int? expandedIndex;
 
   LatLng? _userPosition;
   List<University> _universities = [];
@@ -65,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final universities = await di.getIt<UniversityRepository>().getUniversities();
+      final universities = await di
+          .getIt<UniversityRepository>()
+          .getUniversities();
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -73,7 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _userPosition = newPosition;
         _universities = universities!;
-        _mapKey = '${newPosition.latitude}_${newPosition.longitude}'; // Change key → rebuild map
+        _mapKey =
+            '${newPosition.latitude}_${newPosition.longitude}'; // Change key → rebuild map
       });
     } catch (e) {
       setState(() {
@@ -151,9 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // SI position pas prête → écran de loading/erreur SEUL
     if (_userPosition == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Carte des Universités'),
-        ),
+        appBar: AppBar(title: const Text('Carte des Universités')),
         body: Center(
           child: _locationError != null
               ? Column(
@@ -197,7 +199,11 @@ class _HomeScreenState extends State<HomeScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(70),
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(
+              bottom: 16.0,
+              left: 16.0,
+              right: 16.0,
+            ),
             child: Row(
               children: [
                 Flexible(
@@ -224,18 +230,47 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.bottomLeft,
             child: SizedBox(
-              height: 100,
+              height: 180, // parent height stays fixed
               child: PageView.builder(
                 clipBehavior: Clip.none,
-                scrollDirection: Axis.horizontal,
-                padEnds: false,
-                itemCount: _universities.length,
                 controller: PageController(viewportFraction: 0.8),
+                itemCount: 3,
+                padEnds: false,
                 itemBuilder: (context, index) {
-                  final university = _universities[index];
-                  return UniversityCard(
-                    university: university, 
-                    onTap: () => context.push('/universities/${university.id}'),
+                  final isExpanded = expandedIndex == index;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        expandedIndex = isExpanded ? null : index;
+                      });
+                    },
+                    child: Center(
+                      child: OverflowBox(
+                        alignment: Alignment.bottomCenter,
+                        maxHeight: 220, // allows card to grow beyond parent
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOut,
+                          height: isExpanded ? 350 : 100,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
