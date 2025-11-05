@@ -4,14 +4,15 @@ import 'dart:io';
 abstract class ClassroomRepository {
   Future<Classroom> createClassroom(
     Classroom classroom,
-    File? mainImage,
-    {List<File> annexesImages = const []});
+    File? mainImage, {
+    List<File> annexesImages = const [],
+  });
+  Future<List<Classroom>?> getClassrooms({String? query});
   Future<Classroom?> getClassroomById(String id);
   Future<Classroom> updateClassroom(
     String id,
     Classroom classroom,
-    File? mainImage, 
-    {List<File> annexesImages = const []}
-  );
-  Future<List<Classroom>?> searchClassrooms(String query);
+    File? mainImage, {
+    List<File> annexesImages = const [],
+  });
 }
