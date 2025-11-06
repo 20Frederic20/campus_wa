@@ -8,23 +8,21 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class UniversityClassroomsScreen extends StatefulWidget {
+  const UniversityClassroomsScreen({
+    super.key,
+    required this.universityId,
+    required this.universityName,
+  });
 
   final String universityId;
   final String universityName;
 
-  const UniversityClassroomsScreen({
-    super.key, 
-    required this.universityId, 
-    required this.universityName,
-  });
-
   @override
-  State<UniversityClassroomsScreen> createState() => _UniversityClassroomsScreen();
-  
+  State<UniversityClassroomsScreen> createState() =>
+      _UniversityClassroomsScreen();
 }
 
 class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
-
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -36,12 +34,14 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
 
   List<Classroom> _filterClassrooms(List<Classroom> classrooms, String query) {
     if (query.isEmpty) return classrooms;
-    return classrooms.where((classroom) => 
-      classroom.name.toLowerCase().contains(query.toLowerCase()) ||
-      classroom.slug.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    return classrooms
+        .where(
+          (classroom) =>
+              classroom.name.toLowerCase().contains(query.toLowerCase()) ||
+              classroom.slug.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,9 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
         ),
       ),
       body: FutureBuilder<List<Classroom>?>(
-        future: di.getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId),
+        future: di.getIt<UniversityRepository>().getUniversityClassrooms(
+          widget.universityId,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -99,9 +101,12 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
           }
 
           final classrooms = snapshot.data ?? [];
-          
-          final filteredClassrooms = _filterClassrooms(classrooms, _searchQuery);
-          
+
+          final filteredClassrooms = _filterClassrooms(
+            classrooms,
+            _searchQuery,
+          );
+
           if (filteredClassrooms.isEmpty) {
             return const Center(
               child: Text("Aucune salle de classe disponible"),
@@ -124,14 +129,17 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
                     ),
                     color: AppColors.white,
                     child: ListTile(
-                      leading: const Icon(Icons.meeting_room, color: Colors.red),
+                      leading: const Icon(
+                        Icons.meeting_room,
+                        color: Colors.red,
+                      ),
                       title: Text(
                         classroom.name,
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(classroom.slug),
                       trailing: const Icon(
-                        Icons.arrow_forward_ios, 
+                        Icons.arrow_forward_ios,
                         size: 16,
                         color: AppColors.primaryGreen,
                       ),
@@ -149,7 +157,9 @@ class _UniversityClassroomsScreen extends State<UniversityClassroomsScreen> {
 
   Future<void> _refreshData(BuildContext context) async {
     try {
-      await di.getIt<UniversityRepository>().getUniversityClassrooms(widget.universityId);
+      await di.getIt<UniversityRepository>().getUniversityClassrooms(
+        widget.universityId,
+      );
       // La mise à jour de l'interface sera gérée par le FutureBuilder
     } catch (e) {
       // L'erreur sera capturée par le FutureBuilder

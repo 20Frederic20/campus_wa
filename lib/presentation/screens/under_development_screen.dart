@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class UnderDevelopmentScreen extends StatelessWidget {
+  const UnderDevelopmentScreen({super.key, this.featureName});
   final String? featureName;
-  
-  const UnderDevelopmentScreen({
-    super.key,
-    this.featureName,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +22,9 @@ class UnderDevelopmentScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                featureName != null 
-                  ? 'La fonctionnalité "$featureName" est en cours de développement'
-                  : 'Cette fonctionnalité est en cours de développement',
+                featureName != null
+                    ? 'La fonctionnalité "$featureName" est en cours de développement'
+                    : 'Cette fonctionnalité est en cours de développement',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20),
               ),

@@ -11,7 +11,6 @@ import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
 import 'package:campus_wa/presentation/screens/settings_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
 import 'package:campus_wa/presentation/screens/university_classrooms_screen.dart';
-import 'package:campus_wa/presentation/screens/university_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,13 +27,6 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/universities/add',
           builder: (context, state) => const AddUniversityScreen(),
-        ),
-        GoRoute(
-          path: '/universities/:id',
-          builder: (context, state) {
-            final universityId = state.pathParameters['id']!;
-            return UniversityDetailScreen(universityId: universityId);
-          },
         ),
         GoRoute(
           path: '/classrooms/add',
