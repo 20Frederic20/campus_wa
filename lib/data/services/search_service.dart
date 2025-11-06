@@ -1,16 +1,15 @@
 import 'dart:developer'; // Add this if not already imported
 
-import 'package:campus_wa/domain/entities/searchable_item.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/domain/repositories/classroom_repository.dart';
-import 'package:campus_wa/domain/adapters/university_adapter.dart';
 import 'package:campus_wa/domain/adapters/classroom_adapter.dart';
+import 'package:campus_wa/domain/adapters/university_adapter.dart';
+import 'package:campus_wa/domain/entities/searchable_item.dart';
+import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
 
 class SearchService {
+  SearchService(this._universityRepository, this._classroomRepository);
   final UniversityRepository _universityRepository;
   final ClassroomRepository _classroomRepository;
-
-  SearchService(this._universityRepository, this._classroomRepository);
 
   Future<List<SearchableItem>> search(String query) async {
     try {

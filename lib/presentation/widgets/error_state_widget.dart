@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ErrorStateWidget extends StatelessWidget {
+  const ErrorStateWidget({super.key, required this.error, this.onRetry});
   final String error;
   final VoidCallback? onRetry;
-
-  const ErrorStateWidget({
-    super.key,
-    required this.error,
-    this.onRetry,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +25,7 @@ class ErrorStateWidget extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: const Text('Réessayer'),
-            ),
+            ElevatedButton(onPressed: onRetry, child: const Text('Réessayer')),
           ],
         ],
       ),

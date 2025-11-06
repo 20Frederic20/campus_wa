@@ -4,16 +4,15 @@ import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class UniversityCard extends StatelessWidget {
-  final University university;
-  final bool isExpanded;
-  final VoidCallback onTap;
-
   const UniversityCard({
     super.key,
     required this.university,
     required this.isExpanded,
     required this.onTap,
   });
+  final University university;
+  final bool isExpanded;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {

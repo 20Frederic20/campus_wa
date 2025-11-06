@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ImagesDisplayWidget extends StatelessWidget {
+  const ImagesDisplayWidget({
+    super.key,
+    this.imageUrls,
+    this.enableCarousel = false,
+    this.allowMultipleImages = true,
+    this.height = 220,
+  });
+
   /// Liste des URLs d’images (nullable)
   final List<String>? imageUrls;
 
@@ -12,14 +20,6 @@ class ImagesDisplayWidget extends StatelessWidget {
 
   /// Si false, ne prend que la première image même si plusieurs sont présentes
   final bool allowMultipleImages;
-
-  const ImagesDisplayWidget({
-    super.key,
-    this.imageUrls,
-    this.enableCarousel = false,
-    this.allowMultipleImages = true,
-    this.height = 220,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +44,11 @@ class ImagesDisplayWidget extends StatelessWidget {
 
     // Si carrousel activé ET plusieurs images
     if (enableCarousel && displayedImages.length > 1) {
-      return _ImageCarousel(
-        imageUrls: displayedImages,
-        height: height,
-      );
+      return _ImageCarousel(imageUrls: displayedImages, height: height);
     }
 
     // Sinon → simple image fixe
-    return _SingleImage(
-      imageUrl: displayedImages.first,
-      height: height,
-    );
+    return _SingleImage(imageUrl: displayedImages.first, height: height);
   }
 }
 
@@ -130,7 +124,11 @@ class _ImageCarouselState extends State<_ImageCarousel> {
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: Colors.grey[300],
                     child: const Center(
-                      child: Icon(Icons.broken_image, color: Colors.grey, size: 60),
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: 60,
+                      ),
                     ),
                   ),
                 );
