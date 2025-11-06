@@ -1,6 +1,9 @@
+import 'package:campus_wa/core/theme/app_theme.dart';
+import 'package:campus_wa/core/utils/map_utils.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:latlong2/latlong.dart';
 
 class ClassroomCard extends StatelessWidget {
   const ClassroomCard({
@@ -84,6 +87,40 @@ class ClassroomCard extends StatelessWidget {
                         ),
                       ),
                       const Gap(8),
+
+                      if (classroom.lat != null) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                'Ouvrir dans Google Maps',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => openGoogleMaps(
+                                context: context,
+                                position: LatLng(
+                                  double.parse(classroom.lat),
+                                  double.parse(classroom.lng),
+                                ),
+                              ),
+                              icon: const Icon(
+                                Icons.map_outlined,
+                                color: Colors.blue,
+                                size: 24,
+                              ),
+                              tooltip: 'Ouvrir Google Maps',
+                            ),
+                          ],
+                        ),
+                        const Gap(8),
+                      ],
 
                       if (images.isNotEmpty)
                         SizedBox(
