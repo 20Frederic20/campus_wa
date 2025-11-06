@@ -2,15 +2,20 @@ import 'dart:io';
 
 import 'package:campus_wa/data/models/api/classroom_dto.dart';
 import 'package:campus_wa/data/services/api_service.dart';
+import 'package:campus_wa/domain/local/classroom_local_datasource.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:dio/dio.dart';
 
 class ClassroomRepositoryImpl implements ClassroomRepository {
-  ClassroomRepositoryImpl({required ApiService apiService})
-    : _apiService = apiService;
+  ClassroomRepositoryImpl({
+    required ApiService apiService,
+    required ClassroomLocalDataSource classroomLocal,
+  }) : _apiService = apiService,
+       _classroomLocal = classroomLocal;
 
   final ApiService _apiService;
+  final ClassroomLocalDataSource _classroomLocal;
   final Map<String, Classroom> _classroomCache = {};
 
   // Helper : est-ce une erreur réseau ?
@@ -89,18 +94,18 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       }
       final response = await _apiService.get('/classrooms/$id');
       if (response.data is Map && response.data['classroom'] is Map) {
-        final classroom = ClassroomDto.fromJson(
-          response.data['classroom'],
-        ).toDomain();
-        _classroomCache[id] = classroom;
-        return classroom;
+        final classroom = ClassroomDto.fromJson(response.data['classroom']);
+        await _classroomLocal.cacheClassroomById(id, classroom);
+        return classroom.toDomain();
       }
       throw Exception('Format de réponse inattendu');
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        throw Exception('Salle de classe non trouvée');
+      if (_isNetworkError(e)) {
+        final classroom = await _classroomLocal.getCachedClassroomById(id);
+        if (classroom == null) return null;
+        return classroom.toDomain();
       }
-      rethrow;
+      return null;
     }
   }
 
@@ -197,6 +202,38 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
     } on DioException catch (e) {
       if (_isNetworkError(e)) return null;
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<Classroom>?> getRandomClassrooms() async {
+    try {
+      final response = await _apiService.get('/classrooms/random');
+      if (response.data is Map<String, dynamic> &&
+          response.data['classrooms'] is List) {
+        final List<dynamic> jsonList =
+            response.data['classrooms'] as List<dynamic>;
+        final List<ClassroomDto> dtos = jsonList
+            .map<ClassroomDto>(
+              (dynamic j) => ClassroomDto.fromJson(j as Map<String, dynamic>),
+            )
+            .toList();
+        final List<Classroom> domainList = dtos
+            .map<Classroom>((ClassroomDto d) => d.toDomain())
+            .toList();
+        await _classroomLocal.cacheRandomClassrooms(dtos);
+        return domainList;
+      }
+      return null;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        final randomClassrooms = await _classroomLocal
+            .getCachedRandomClassrooms();
+        if (randomClassrooms != null) {
+          return randomClassrooms.map((c) => c.toDomain()).toList();
+        }
+      }
+      return null;
     }
   }
 }
