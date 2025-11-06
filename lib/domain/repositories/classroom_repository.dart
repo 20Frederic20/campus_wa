@@ -9,6 +9,7 @@ abstract class ClassroomRepository {
   });
   Future<List<Classroom>?> getClassrooms({String? query});
   Future<Classroom?> getClassroomById(String id);
+  Future<List<Classroom>?> getRandomClassrooms();
   Future<Classroom> updateClassroom(
     String id,
     Classroom classroom,
