@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
-import 'package:campus_wa/domain/models/university.dart';
-import 'package:campus_wa/domain/repositories/university_repository.dart';
+import 'package:campus_wa/domain/models/classroom.dart';
+import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/presentation/widgets/classroom_card.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
-import 'package:campus_wa/presentation/widgets/university_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gap/gap.dart';
@@ -25,8 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int? expandedIndex;
 
   LatLng? _userPosition;
-  List<University> _universities = [];
+  List<Classroom> _classrooms = [];
   String? _locationError;
+
+  late PageController _pageController;
 
   // Clé pour rebuild map (seulement quand position prête)
   String _mapKey = 'loading';
@@ -66,16 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final universities = await di
-          .getIt<UniversityRepository>()
-          .getUniversities();
+      final classrooms = await di
+          .getIt<ClassroomRepository>()
+          .getRandomClassrooms();
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
       final newPosition = LatLng(position.latitude, position.longitude);
       setState(() {
         _userPosition = newPosition;
-        _universities = universities!;
+        _classrooms = classrooms!;
         _mapKey =
             '${newPosition.latitude}_${newPosition.longitude}'; // Change key → rebuild map
       });
@@ -86,15 +90,62 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _handleSearchResult(dynamic result) async {
+    if (result.type != 'classroom') return; // Ignore non-classrooms for now
+
+    final classroomId = result.id; // Assume SearchableItem has 'id' String
+    if (classroomId == null) {
+      log('Search result missing ID');
+      return;
+    }
+
+    // Check if already in list
+    final existingIndex = _classrooms.indexWhere((c) => c.id == classroomId);
+    if (existingIndex != -1) {
+      // Exists: Scroll to it and expand
+      _pageController.jumpToPage(existingIndex);
+      setState(() {
+        expandedIndex = existingIndex;
+      });
+    } else {
+      // Not exists: Fetch full Classroom and add at start
+      try {
+        final classroomRepo = di.getIt<ClassroomRepository>();
+        final newClassroom = await classroomRepo.getClassroomById(classroomId);
+        if (newClassroom != null) {
+          setState(() {
+            _classrooms.insert(0, newClassroom); // Add as first element
+            expandedIndex = 0; // Expand the new one
+          });
+          _pageController.jumpToPage(0); // Scroll to top
+        } else {
+          log('Failed to fetch classroom $classroomId');
+        }
+      } catch (e) {
+        log('Error fetching classroom: $e');
+        // Optional: Show snackbar error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erreur lors du chargement de la salle: $e'),
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(viewportFraction: 0.8);
     _getUserLocation(); // Démarre la récup au init
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -210,11 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: SearchBarAnchorWidget(
                     controller: _searchController,
                     hintText: 'Rechercher sur la carte...',
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.trim();
-                      });
-                    },
+                    onChanged: _handleSearchResult,
                   ),
                 ),
                 const Gap(10),
@@ -229,51 +276,60 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildMap(),
           Align(
             alignment: Alignment.bottomLeft,
-            child: SizedBox(
-              height: 180, // parent height stays fixed
-              child: PageView.builder(
-                clipBehavior: Clip.none,
-                controller: PageController(viewportFraction: 0.8),
-                itemCount: 3,
-                padEnds: false,
-                itemBuilder: (context, index) {
-                  final isExpanded = expandedIndex == index;
+            child: Builder(
+              builder: (context) {
+                return SizedBox(
+                  height: 180, // parent height stays fixed
+                  child: PageView.builder(
+                    clipBehavior: Clip.none,
+                    controller: _pageController,
+                    itemCount: _classrooms.length,
+                    padEnds: false,
+                    itemBuilder: (context, index) {
+                      final isExpanded = expandedIndex == index;
+                      final classroom = _classrooms[index];
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        expandedIndex = isExpanded ? null : index;
-                      });
-                    },
-                    child: Center(
-                      child: OverflowBox(
-                        alignment: Alignment.bottomCenter,
-                        maxHeight: 220, // allows card to grow beyond parent
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeOut,
-                          height: isExpanded ? 350 : 100,
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            expandedIndex = isExpanded ? null : index;
+                          });
+                        },
+                        child: Center(
+                          child: OverflowBox(
+                            alignment: Alignment.bottomCenter,
+                            maxHeight: 220, // allows card to grow beyond parent
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOut,
+                              height: isExpanded ? 350 : 100,
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
+                              child: ClassroomCard(
+                                classroom: classroom,
+                                isExpanded: isExpanded,
+                                onTap: () => setState(() {
+                                  expandedIndex = isExpanded ? null : index;
+                                }),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ],

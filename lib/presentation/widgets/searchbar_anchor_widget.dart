@@ -5,16 +5,15 @@ import 'package:campus_wa/data/services/search_service.dart';
 import 'package:flutter/material.dart';
 
 class SearchBarAnchorWidget extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final ValueChanged<String> onChanged;
-
   const SearchBarAnchorWidget({
     super.key,
     required this.controller,
     required this.hintText,
     required this.onChanged,
   });
+  final TextEditingController controller;
+  final String hintText;
+  final ValueChanged<dynamic> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class SearchBarAnchorWidget extends StatelessWidget {
               ),
               onTap: () {
                 controller.text = result.name;
-                onChanged(result.name);
+                onChanged.call(result);
                 controller.closeView('');
               },
             );
