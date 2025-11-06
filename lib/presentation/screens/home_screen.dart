@@ -4,6 +4,7 @@ import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/presentation/widgets/classroom_card.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
@@ -91,44 +92,83 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _handleSearchResult(dynamic result) async {
-    if (result.type != 'classroom') return; // Ignore non-classrooms for now
+    if (result.type == 'classroom') {
+      final classroomId = result.id; // Assume SearchableItem has 'id' String
+      if (classroomId == null) {
+        log('Search result missing ID');
+        return;
+      }
 
-    final classroomId = result.id; // Assume SearchableItem has 'id' String
-    if (classroomId == null) {
-      log('Search result missing ID');
-      return;
-    }
+      // Check if already in list
+      final existingIndex = _classrooms.indexWhere((c) => c.id == classroomId);
+      if (existingIndex != -1) {
+        // Exists: Scroll to it and expand
+        _pageController.jumpToPage(existingIndex);
+        setState(() {
+          expandedIndex = existingIndex;
+        });
+      } else {
+        // Not exists: Fetch full Classroom and add at start
+        try {
+          final classroomRepo = di.getIt<ClassroomRepository>();
+          final newClassroom = await classroomRepo.getClassroomById(
+            classroomId,
+          );
+          if (newClassroom != null) {
+            setState(() {
+              _classrooms.insert(0, newClassroom); // Add as first element
+              expandedIndex = 0; // Expand the new one
+            });
+            _pageController.jumpToPage(0); // Scroll to top
+          } else {
+            log('Failed to fetch classroom $classroomId');
+          }
+        } catch (e) {
+          log('Error fetching classroom: $e');
+          // Optional: Show snackbar error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Erreur lors du chargement de la salle: $e'),
+              ),
+            );
+          }
+        }
+      }
+    } else if (result.type == 'university') {
+      // Added: Handle university tap – fetch and show its classrooms
+      final universityId = result.id; // Assume 'id' is university's ID
+      if (universityId == null) {
+        log('Search result missing university ID');
+        return;
+      }
 
-    // Check if already in list
-    final existingIndex = _classrooms.indexWhere((c) => c.id == classroomId);
-    if (existingIndex != -1) {
-      // Exists: Scroll to it and expand
-      _pageController.jumpToPage(existingIndex);
-      setState(() {
-        expandedIndex = existingIndex;
-      });
-    } else {
-      // Not exists: Fetch full Classroom and add at start
       try {
-        final classroomRepo = di.getIt<ClassroomRepository>();
-        final newClassroom = await classroomRepo.getClassroomById(classroomId);
-        if (newClassroom != null) {
+        final universityRepo = di.getIt<UniversityRepository>();
+        final universityClassrooms = await universityRepo
+            .getUniversityClassrooms(universityId);
+        if (universityClassrooms != null && universityClassrooms.isNotEmpty) {
           setState(() {
-            _classrooms.insert(0, newClassroom); // Add as first element
-            expandedIndex = 0; // Expand the new one
+            _classrooms =
+                universityClassrooms; // Replace list with university's classrooms
+            expandedIndex = null; // Reset expansion for fresh view
           });
-          _pageController.jumpToPage(0); // Scroll to top
+          _pageController.jumpToPage(0); // Scroll to start
         } else {
-          log('Failed to fetch classroom $classroomId');
+          log('No classrooms found for university $universityId');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Aucune salle trouvée pour cette université'),
+              ),
+            );
+          }
         }
       } catch (e) {
-        log('Error fetching classroom: $e');
-        // Optional: Show snackbar error
+        log('Error fetching classrooms for university: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Erreur lors du chargement de la salle: $e'),
-            ),
+            SnackBar(content: Text('Erreur lors du chargement des salles: $e')),
           );
         }
       }
