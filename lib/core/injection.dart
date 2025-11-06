@@ -48,6 +48,9 @@ Future<void> setupDependencies() async {
       ),
     )
     ..registerLazySingleton<ClassroomRepository>(
-      () => ClassroomRepositoryImpl(apiService: getIt<ApiService>()),
+      () => ClassroomRepositoryImpl(
+        apiService: getIt<ApiService>(),
+        classroomLocal: getIt<ClassroomLocalDataSource>(),
+      ),
     );
 }
