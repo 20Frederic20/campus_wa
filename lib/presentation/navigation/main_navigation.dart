@@ -23,14 +23,8 @@ final GoRouter router = GoRouter(
     ShellRoute(
       builder: (context, state, child) => MainScaffold(child: child),
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const WelcomeScreen(),
-        ),
-        GoRoute(
-          path: '/home',
-          builder: (context, state) => const HomeScreen(),
-        ),
+        GoRoute(path: '/', builder: (context, state) => const WelcomeScreen()),
+        GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
         GoRoute(
           path: '/universities/add',
           builder: (context, state) => const AddUniversityScreen(),
@@ -39,9 +33,7 @@ final GoRouter router = GoRouter(
           path: '/universities/:id',
           builder: (context, state) {
             final universityId = state.pathParameters['id']!;
-            return UniversityDetailScreen(
-              universityId: universityId,
-            );
+            return UniversityDetailScreen(universityId: universityId);
           },
         ),
         GoRoute(
@@ -52,18 +44,14 @@ final GoRouter router = GoRouter(
           path: '/classrooms/:classroomId',
           builder: (context, state) {
             final id = state.pathParameters['classroomId']!;
-            return ClassroomDetailScreen(
-              classroomId: id,
-            );
+            return ClassroomDetailScreen(classroomId: id);
           },
         ),
         GoRoute(
           path: '/classrooms/:classroomId/edit',
           builder: (context, state) {
             final classroomId = state.pathParameters['classroomId']!;
-            return EditClassroomScreen(
-              classroomId: classroomId,
-            );
+            return EditClassroomScreen(classroomId: classroomId);
           },
         ),
         GoRoute(
@@ -89,7 +77,8 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/geolocation',
-          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Geolocation'),
+          builder: (context, state) =>
+              const UnderDevelopmentScreen(featureName: 'Geolocation'),
         ),
         GoRoute(
           path: '/settings',
@@ -105,11 +94,15 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/settings/help/guide',
-          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Guide de prise en main'),
+          builder: (context, state) => const UnderDevelopmentScreen(
+            featureName: 'Guide de prise en main',
+          ),
         ),
         GoRoute(
           path: '/settings/help/advanced',
-          builder: (context, state) => const UnderDevelopmentScreen(featureName: 'Fonctionnalités avancées'),
+          builder: (context, state) => const UnderDevelopmentScreen(
+            featureName: 'Fonctionnalités avancées',
+          ),
         ),
         GoRoute(
           path: '/settings/privacy',
@@ -160,34 +153,72 @@ class MainScaffold extends StatelessWidget {
                   indicatorColor: Colors.white.withValues(alpha: 0.3),
                   surfaceTintColor: Colors.transparent,
                   labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                  labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
-                    (Set<WidgetState> states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white, // Optional: set the selected text color
-                        );
-                      }
-                      return const TextStyle(color: Colors.white70); // Unselected text style
-                    },
-                  ),
+                  labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((
+                    Set<WidgetState> states,
+                  ) {
+                    if (states.contains(WidgetState.selected)) {
+                      return const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors
+                            .white, // Optional: set the selected text color
+                      );
+                    }
+                    return const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ); // Unselected text style
+                  }),
                   selectedIndex: _calculateSelectedIndex(location),
-                  onDestinationSelected: (index) => _onItemTapped(context, index),
+                  onDestinationSelected: (index) =>
+                      _onItemTapped(context, index),
                   destinations: [
                     const NavigationDestination(
                       icon: Icon(
-                        Icons.home_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: Icon(Icons.home, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                        Icons.home_outlined,
+                        size: 18,
+                        color: AppColors.white,
+                      ),
+                      selectedIcon: Icon(
+                        Icons.home,
+                        size: 20,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(blurRadius: 10.0, color: Colors.white),
+                        ],
+                      ),
                       label: 'Accueil',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.calendar_today_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: Icon(Icons.calendar_today, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      icon: Icon(
+                        Icons.calendar_today_outlined,
+                        size: 18,
+                        color: AppColors.white,
+                      ),
+                      selectedIcon: Icon(
+                        Icons.calendar_today,
+                        size: 20,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(blurRadius: 10.0, color: Colors.white),
+                        ],
+                      ),
                       label: 'Plannings',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.settings_outlined, size: 26, color: AppColors.white),
-                      selectedIcon: Icon(Icons.settings, size: 28, color: Colors.white, shadows: [Shadow(blurRadius: 10.0, color: Colors.white)]),
+                      icon: Icon(
+                        Icons.settings_outlined,
+                        size: 18,
+                        color: AppColors.white,
+                      ),
+                      selectedIcon: Icon(
+                        Icons.settings,
+                        size: 20,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(blurRadius: 10.0, color: Colors.white),
+                        ],
+                      ),
                       label: 'Paramètres',
                     ),
                   ],
@@ -199,13 +230,14 @@ class MainScaffold extends StatelessWidget {
 
   /// Calcule quel onglet est sélectionné
   static int _calculateSelectedIndex(String location) {
-    if (location == '/home' ||  location.startsWith('/universities/') || location == '/universities/add') {
+    if (location == '/home' ||
+        location.startsWith('/universities/') ||
+        location == '/universities/add') {
       return 0;
-    }
-    else if (location.startsWith('/plannings')) {
+    } else if (location.startsWith('/plannings')) {
       return 1;
-    }
-    else if (location.startsWith('/settings') || location.startsWith('/settings/cgu')) {
+    } else if (location.startsWith('/settings') ||
+        location.startsWith('/settings/cgu')) {
       return 2;
     }
     return 0; // par défaut
