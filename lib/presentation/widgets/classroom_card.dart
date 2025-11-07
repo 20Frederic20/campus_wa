@@ -28,9 +28,86 @@ class ClassroomCard extends StatelessWidget {
     return images;
   }
 
+  void _openFullScreenImage(
+    String imageUrl,
+    BuildContext context, {
+    String? heroTag,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (routeContext) => Scaffold(
+          backgroundColor: Colors.black,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Hero(
+                  tag: heroTag ?? 'fullscreen_image',
+                  child: Center(
+                    child: InteractiveViewer(
+                      panEnabled: true,
+                      boundaryMargin: const EdgeInsets.all(20),
+                      minScale: 0.5,
+                      maxScale: 4.0,
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[900],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: GestureDetector(
+                    onVerticalDragEnd: (details) {
+                      if (details.velocity.pixelsPerSecond.dy > 300)
+                        Navigator.of(routeContext).pop();
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  right: 20,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => Navigator.of(routeContext).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        fullscreenDialog: true,
+        settings: const RouteSettings(name: 'fullscreen_image'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final images = _allImages;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -64,10 +141,23 @@ class ClassroomCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (!isExpanded)
-                  const Icon(Icons.expand_less, size: 20, color: Colors.grey)
-                else
-                  const Icon(Icons.expand_more, size: 20, color: Colors.grey),
+                InkWell(
+                  onTap: () {
+                    debugPrint(
+                      'Icon tapped - toggling expansion',
+                    ); // Debug: Check console
+                    onTap();
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0), // Hit area ~28px
+                    child: Icon(
+                      isExpanded ? Icons.expand_more : Icons.expand_less,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
               ],
             ),
             const Gap(8),
@@ -124,41 +214,46 @@ class ClassroomCard extends StatelessWidget {
 
                       if (images.isNotEmpty)
                         SizedBox(
-                          height: 200, // Fixed height for carousel
+                          height: 200,
                           child: PageView.builder(
                             itemCount: images.length,
-                            // viewportFraction: 1.0 for full-width (or 0.8 for peeking effect)
                             controller: PageController(viewportFraction: 1.0),
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4.0,
-                                ), // Small side margins
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    12,
-                                  ), // Rounded corners
-                                  child: Image.network(
-                                    images[index],
-                                    height: 200,
-                                    width: double.infinity,
-                                    fit: BoxFit
-                                        .cover, // Centers and covers the area
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              height: 200,
-                                              color: Colors.grey[200],
-                                              child: const Icon(
-                                                Icons.image_not_supported,
-                                                size: 50,
-                                                color: Colors.grey,
+                            itemBuilder: (context, index) => GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => _openFullScreenImage(
+                                images[index],
+                                context,
+                                heroTag: '${classroom.id}_img_$index',
+                              ),
+                              child: Hero(
+                                tag: '${classroom.id}_img_$index',
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4.0,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      images[index],
+                                      height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                height: 200,
+                                                color: Colors.grey[200],
+                                                child: const Icon(
+                                                  Icons.image_not_supported,
+                                                  size: 50,
+                                                  color: Colors.grey,
+                                                ),
                                               ),
-                                            ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           ),
                         )
                       else ...[

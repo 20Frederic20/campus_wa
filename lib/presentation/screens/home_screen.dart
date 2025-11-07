@@ -239,10 +239,35 @@ class _HomeScreenState extends State<HomeScreen> {
             ]
           : [],
     );
+    // return MapboxMapWidget(
+    //   center: _userPosition ?? const LatLng(0, 0),
+    //   zoom: _userPosition != null ? 15.0 : 2.0,
+    //   markers: _userPosition != null
+    //       ? [
+    //           Marker(
+    //             point: _userPosition!,
+    //             width: 40,
+    //             height: 40,
+    //             child: const Icon(
+    //               Icons.location_on,
+    //               color: AppColors.accentRed,
+    //               size: 48,
+    //             ),
+    //           ),
+    //         ]
+    //       : [],
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final expandedHeight = screenHeight - 126 - 100 - 180;
+    final anyExpanded = expandedIndex != null;
+    final maxPanelHeight = screenHeight * 0.9; // leave a bit of margin
+    final panelHeight = anyExpanded
+        ? (expandedHeight + 100).clamp(180.0, maxPanelHeight)
+        : 180.0;
     // SI position pas prête → écran de loading/erreur SEUL
     if (_userPosition == null) {
       return Scaffold(
@@ -312,6 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Stack(
+        clipBehavior: Clip.none,
         children: [
           _buildMap(),
           Align(
@@ -319,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Builder(
               builder: (context) {
                 return SizedBox(
-                  height: 180, // parent height stays fixed
+                  height: panelHeight, // <-- dynamic height here
                   child: PageView.builder(
                     clipBehavior: Clip.none,
                     controller: _pageController,
@@ -329,39 +355,34 @@ class _HomeScreenState extends State<HomeScreen> {
                       final isExpanded = expandedIndex == index;
                       final classroom = _classrooms[index];
 
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            expandedIndex = isExpanded ? null : index;
-                          });
-                        },
-                        child: Center(
-                          child: OverflowBox(
-                            alignment: Alignment.bottomCenter,
-                            maxHeight: 220, // allows card to grow beyond parent
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeOut,
-                              height: isExpanded ? 350 : 100,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: ClassroomCard(
-                                classroom: classroom,
-                                isExpanded: isExpanded,
-                                onTap: () => setState(() {
-                                  expandedIndex = isExpanded ? null : index;
-                                }),
-                              ),
+                      return Center(
+                        child: OverflowBox(
+                          alignment: Alignment.bottomCenter,
+                          maxHeight:
+                              expandedHeight +
+                              100, // allows card to grow beyond parent
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeOut,
+                            height: isExpanded ? expandedHeight : 100,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ClassroomCard(
+                              classroom: classroom,
+                              isExpanded: isExpanded,
+                              onTap: () => setState(() {
+                                expandedIndex = isExpanded ? null : index;
+                              }),
                             ),
                           ),
                         ),
