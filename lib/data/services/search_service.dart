@@ -38,7 +38,7 @@ class SearchService {
     );
     log('Raw universities fetched: ${universities?.length ?? 0}');
     final results =
-        universities?.map((u) => UniversityAdapter(u)).toList() ?? [];
+        universities?.map(UniversityAdapter.new).toList() ?? [];
     log('results for universites search: ${results.toString()}');
     return results;
   }
@@ -51,7 +51,7 @@ class SearchService {
         return [];
       }
       log('Raw classrooms fetched for "$query": ${classrooms.length}');
-      final results = classrooms.map((c) => ClassroomAdapter(c)).toList();
+      final results = classrooms.map(ClassroomAdapter.new).toList();
       log('results for classrooms search: $results');
       return results;
     } catch (e) {

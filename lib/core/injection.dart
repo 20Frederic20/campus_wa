@@ -29,10 +29,10 @@ Future<void> setupDependencies() async {
     ..registerSingleton<Dio>(dio)
     ..registerSingleton<ApiService>(ApiService())
     ..registerLazySingleton<UniversityLocalDataSource>(
-      () => UniversityLocalDataSourceImpl(),
+      UniversityLocalDataSourceImpl.new,
     )
     ..registerLazySingleton<ClassroomLocalDataSource>(
-      () => ClassroomLocalDataSourceImpl(),
+      ClassroomLocalDataSourceImpl.new,
     )
     ..registerLazySingleton<SearchService>(
       () => SearchService(

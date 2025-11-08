@@ -1,7 +1,8 @@
 import 'dart:convert';
+
+import 'package:campus_wa/data/models/api/university_dto.dart';
 import 'package:campus_wa/domain/local/university_local_datasource.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:campus_wa/data/models/api/university_dto.dart';
 
 class UniversityLocalDataSourceImpl implements UniversityLocalDataSource {
   static const String _key = 'cached_universities';

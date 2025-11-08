@@ -7,6 +7,7 @@ import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/presentation/widgets/classroom_card.dart';
 import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
+import 'package:campus_wa/presentation/widgets/mapbox_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -24,7 +25,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final SearchController _searchController = SearchController();
-  String _searchQuery = '';
   int? expandedIndex;
 
   LatLng? _userPosition;
@@ -220,43 +220,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMap() {
-    return LeafletMapWidget(
+    // Create a list of all marker positions
+    final markerPositions = <LatLng>[];
+
+    // Add user position if available
+    if (_userPosition != null) {
+      markerPositions.add(_userPosition!);
+    }
+
+    // Add all classroom positions
+    // for (final classroom in _classrooms) {
+    //   if (classroom.latitude != null && classroom.longitude != null) {
+    //     markerPositions.add(LatLng(
+    //       classroom.latitude!,
+    //       classroom.longitude!,
+    //     ));
+    //   }
+    // }
+
+    return MapboxMapWidget(
       key: ValueKey(_mapKey),
       center: _userPosition ?? const LatLng(0, 0),
       zoom: _userPosition != null ? 15.0 : 2.0,
-      markers: _userPosition != null
-          ? [
-              Marker(
-                point: _userPosition!,
-                width: 40,
-                height: 40,
-                child: const Icon(
-                  Icons.location_on,
-                  color: AppColors.accentRed,
-                  size: 48,
-                ),
-              ),
-            ]
-          : [],
+      markers: markerPositions,
     );
-    // return MapboxMapWidget(
-    //   center: _userPosition ?? const LatLng(0, 0),
-    //   zoom: _userPosition != null ? 15.0 : 2.0,
-    //   markers: _userPosition != null
-    //       ? [
-    //           Marker(
-    //             point: _userPosition!,
-    //             width: 40,
-    //             height: 40,
-    //             child: const Icon(
-    //               Icons.location_on,
-    //               color: AppColors.accentRed,
-    //               size: 48,
-    //             ),
-    //           ),
-    //         ]
-    //       : [],
-    // );
   }
 
   @override

@@ -1,8 +1,6 @@
-
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 
 class CguScreen extends StatelessWidget {
   const CguScreen({super.key});
@@ -38,7 +36,7 @@ GPS + OpenStreetMap. Pas de cookie, pas de pub.
 • Mettez à jour régulièrement
 
 7. Nos responsabilités
-On fait tout pour que ça marche.  
+On fait tout pour que ça marche.
 Pas responsable si : maintenance, coupure réseau, apocalypse zombie.
 
 8. Propriété intellectuelle
@@ -61,9 +59,9 @@ Contact : contact@campuswa.com
             tooltip: 'Copier',
             onPressed: () {
               Clipboard.setData(const ClipboardData(text: _cguText));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('CGU copiées !')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('CGU copiées !')));
             },
           ),
         ],
@@ -77,9 +75,9 @@ Contact : contact@campuswa.com
             Text(
               'Conditions Générales d’Utilisation',
               style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryGreen,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryGreen,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -103,7 +101,10 @@ Contact : contact@campuswa.com
                 label: const Text('J’accepte les CGU'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGreen,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
                 ),
                 onPressed: () => Navigator.pop(context),
               ),
@@ -113,7 +114,7 @@ Contact : contact@campuswa.com
             Center(
               child: TextButton(
                 child: const Text('Refuser → quitter l’app'),
-                onPressed: () => SystemNavigator.pop(), // ferme l’app
+                onPressed: SystemNavigator.pop, // ferme l’app
               ),
             ),
           ],

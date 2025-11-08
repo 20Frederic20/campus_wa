@@ -2,17 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'classroom.dart';
 
 class University extends Equatable {
-  final String id;
-  final String name;
-  final String slug;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int classroomsCount;
-  final String description;
-  final String lng;
-  final String lat;
-  final String address;
-  final List<Classroom> classrooms;
 
   const University({
     required this.id,
@@ -27,6 +16,17 @@ class University extends Equatable {
     this.address = '',
     this.classrooms = const [],
   });
+  final String id;
+  final String name;
+  final String slug;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int classroomsCount;
+  final String description;
+  final String lng;
+  final String lat;
+  final String address;
+  final List<Classroom> classrooms;
   
   @override
   List<Object?> get props => [
