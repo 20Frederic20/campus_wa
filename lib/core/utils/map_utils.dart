@@ -36,6 +36,33 @@ Future<void> openGoogleMaps({
   }
 }
 
+Future<void> openDirections({
+  required BuildContext context,
+  required LatLng origin,
+  required LatLng destination,
+  String travelMode = 'driving', // driving, walking, bicycling
+}) async {
+  // Universal Google Maps directions web URL (works on mobile and desktop)
+  final directionsUrl = Uri.parse(
+    'https://www.google.com/maps/dir/?api=1&origin=${origin.latitude},${origin.longitude}'
+    '&destination=${destination.latitude},${destination.longitude}&travelmode=$travelMode',
+  );
+
+  // On Android another option is google.navigation:q=lat,lon but web url is simplest cross-platform
+  try {
+    if (await canLaunchUrl(directionsUrl)) {
+      await launchUrl(directionsUrl, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Cannot open directions';
+    }
+  } catch (e) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Impossible d\'ouvrir l\'itinéraire: $e')),
+    );
+  }
+}
+
 double _degreesToRadians(double degrees) => degrees * (pi / 180.0);
 
 double haversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
