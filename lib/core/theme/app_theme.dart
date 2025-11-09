@@ -8,6 +8,9 @@ class AppColors {
   static const Color accentYellow = Color(0xFFFFC107); // Jaune
   static const Color accentRed = Color(0xFFE53935); // Rouge
   static const Color white = Color(0xFFFFFFFF); // Blanc
+  static const Color black = Color(0xFF000000); // Noir
+  static const Color primaryBlue = Color(0xFF1976D2); // Bleu primaire
+  static const Color secondaryBlue = Color(0xFF64B5F6); // Bleu secondaire
 
   // Couleurs de texte
   static const Color textPrimary = Color(
