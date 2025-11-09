@@ -11,11 +11,15 @@ class ClassroomCard extends StatelessWidget {
     required this.classroom,
     required this.isExpanded,
     required this.onTap,
+    this.onDirections, // new
+    this.onOpenInGoogleMaps, // new
   });
 
   final Classroom classroom;
   final bool isExpanded;
   final VoidCallback onTap;
+  final Future<void> Function(LatLng)? onDirections;
+  final Future<void> Function(LatLng)? onOpenInGoogleMaps;
 
   List<String> get _allImages {
     final List<String> images = [];
@@ -295,6 +299,70 @@ class ClassroomCard extends StatelessWidget {
                           ),
                         ),
                       const Gap(12),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: (onDirections != null)
+                                    ? () {
+                                        final dest = LatLng(
+                                          double.parse(classroom.lat),
+                                          double.parse(classroom.lng),
+                                        );
+                                        onDirections!(dest);
+                                      }
+                                    : null,
+                                icon: const Icon(
+                                  Icons.directions,
+                                  color: AppColors.white,
+                                ),
+                                label: const Text(
+                                  'Itinéraire',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.accentRed,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: (onOpenInGoogleMaps != null)
+                                    ? () {
+                                        final dest = LatLng(
+                                          double.parse(classroom.lat),
+                                          double.parse(classroom.lng),
+                                        );
+                                        onOpenInGoogleMaps!(dest);
+                                      }
+                                    : null,
+                                icon: const Icon(
+                                  Icons.map,
+                                  color: AppColors.backgroundLight,
+                                ),
+                                label: const Text(
+                                  'Google Maps',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF4285F4),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
