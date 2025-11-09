@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
+import 'package:campus_wa/core/utils/map_utils.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
@@ -13,7 +14,6 @@ import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campus_wa/core/utils/map_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -241,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMap() {
-    final center = _userPosition ?? LatLng(/* fallback coords */ 0, 0);
+    final center = _userPosition ?? const LatLng(/* fallback coords */ 0, 0);
     return MapboxMapWidget(center: center, markers: _nearbyUniversities);
   }
 
@@ -369,6 +369,31 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () => setState(() {
                                 expandedIndex = isExpanded ? null : index;
                               }),
+                              onDirections: (LatLng destination) async {
+                                if (_userPosition == null) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Position utilisateur introuvable',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+                                await openDirections(
+                                  context: context,
+                                  origin: _userPosition!,
+                                  destination: destination,
+                                );
+                              },
+                              onOpenInGoogleMaps: (LatLng destination) async {
+                                await openGoogleMaps(
+                                  context: context,
+                                  position: destination,
+                                );
+                              },
                             ),
                           ),
                         ),
