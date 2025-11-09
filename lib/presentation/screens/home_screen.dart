@@ -6,15 +6,14 @@ import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:campus_wa/presentation/widgets/classroom_card.dart';
-import 'package:campus_wa/presentation/widgets/leaflet_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/mapbox_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:campus_wa/core/utils/map_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,6 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Clé pour rebuild map (seulement quand position prête)
   String _mapKey = 'loading';
+
+  List<LatLng> _nearbyUniversities = [];
 
   Future<void> _getUserLocation() async {
     setState(() {
@@ -87,6 +88,26 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       setState(() {
         _locationError = 'Erreur lors de la récupération de la position: $e';
+      });
+    }
+
+    if (_userPosition != null) {
+      // Example: assume you have a list of university LatLngs called allUniversities
+      // Replace with your real list (from repo/service)
+
+      _nearbyUniversities = filterWithinKm<LatLng>(
+        _classrooms
+            .map((c) => LatLng(double.parse(c.lat), double.parse(c.lng)))
+            .toList(),
+        _userPosition!.latitude,
+        _userPosition!.longitude,
+        20.0,
+        (p) => p.latitude,
+        (p) => p.longitude,
+      );
+
+      setState(() {
+        _nearbyUniversities = _nearbyUniversities;
       });
     }
   }
@@ -220,30 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMap() {
-    // Create a list of all marker positions
-    final markerPositions = <LatLng>[];
-
-    // Add user position if available
-    if (_userPosition != null) {
-      markerPositions.add(_userPosition!);
-    }
-
-    // Add all classroom positions
-    // for (final classroom in _classrooms) {
-    //   if (classroom.latitude != null && classroom.longitude != null) {
-    //     markerPositions.add(LatLng(
-    //       classroom.latitude!,
-    //       classroom.longitude!,
-    //     ));
-    //   }
-    // }
-
-    return MapboxMapWidget(
-      key: ValueKey(_mapKey),
-      center: _userPosition ?? const LatLng(0, 0),
-      zoom: _userPosition != null ? 15.0 : 2.0,
-      markers: markerPositions,
-    );
+    final center = _userPosition ?? LatLng(/* fallback coords */ 0, 0);
+    return MapboxMapWidget(center: center, markers: _nearbyUniversities);
   }
 
   @override
@@ -253,8 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final anyExpanded = expandedIndex != null;
     final maxPanelHeight = screenHeight * 0.9; // leave a bit of margin
     final panelHeight = anyExpanded
-        ? (expandedHeight + 100).clamp(180.0, maxPanelHeight)
-        : 180.0;
+        ? (expandedHeight + 100).clamp(100.0, maxPanelHeight)
+        : 100.0;
     // SI position pas prête → écran de loading/erreur SEUL
     if (_userPosition == null) {
       return Scaffold(
@@ -332,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Builder(
               builder: (context) {
                 return SizedBox(
-                  height: panelHeight, // <-- dynamic height here
+                  height: panelHeight,
                   child: PageView.builder(
                     clipBehavior: Clip.none,
                     controller: _pageController,
