@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -102,6 +99,26 @@ class _MapboxMapWidgetState extends State<MapboxMapWidget> {
 
     _circleAnnotations.clear();
 
+    final center = widget.center;
+    if (center != null) {
+      final centerOptions = CircleAnnotationOptions(
+        geometry: Point(
+          coordinates: Position(center.longitude, center.latitude),
+        ),
+        circleColor: AppColors.primaryBlue.value, // blue for user
+        circleRadius: 10.0,
+        circleStrokeColor: AppColors.white.value,
+        circleStrokeWidth: 1.5,
+      );
+      try {
+        final centerAnn = await _circleAnnotationManager!.create(centerOptions);
+        _circleAnnotations.add(centerAnn);
+      } catch (e) {
+        // ignore but log
+        // ignore: avoid_print
+        print('Center marker creation error: $e');
+      }
+    }
     final markers = widget.markers ?? [];
     for (final m in markers) {
       final options = CircleAnnotationOptions(
@@ -109,7 +126,7 @@ class _MapboxMapWidgetState extends State<MapboxMapWidget> {
         circleColor: AppColors.accentRed.value, // red fill
         circleRadius: 8.0,
         circleStrokeWidth: 1.5,
-        circleStrokeColor: AppColors.white.value,
+        circleStrokeColor: AppColors.primaryGreen.value,
       );
 
       try {
