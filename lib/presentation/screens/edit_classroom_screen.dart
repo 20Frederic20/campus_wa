@@ -5,11 +5,11 @@ import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class EditClassroomScreen extends StatefulWidget {
   final String classroomId;
 
-  const EditClassroomScreen({Key? key, required this.classroomId}) : super(key: key);
+  const EditClassroomScreen({Key? key, required this.classroomId})
+    : super(key: key);
 
   @override
   _EditClassroomScreenState createState() => _EditClassroomScreenState();
@@ -21,7 +21,7 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
   final _slugController = TextEditingController();
   final _lngController = TextEditingController();
   final _latController = TextEditingController();
-  
+
   File? _mainImageFile;
   List<File> _annexesImagesFiles = [];
   bool _isLoading = true;
@@ -36,7 +36,9 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
 
   Future<void> _loadClassroom() async {
     try {
-      final classroom = await di.getIt<ClassroomRepository>().getClassroomById(widget.classroomId);
+      final classroom = await di.getIt<ClassroomRepository>().getClassroomById(
+        widget.classroomId,
+      );
       if (classroom != null) {
         setState(() {
           _nameController.text = classroom.name;
@@ -70,7 +72,9 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
     final pickedFiles = await picker.pickMultiImage();
     if (pickedFiles.isNotEmpty) {
       setState(() {
-        _annexesImagesFiles.addAll(pickedFiles.map((file) => File(file.path)).toList());
+        _annexesImagesFiles.addAll(
+          pickedFiles.map((file) => File(file.path)).toList(),
+        );
       });
     }
   }
@@ -89,8 +93,12 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
         universityId: _selectedUniversityId!,
         name: _nameController.text.trim(),
         slug: _slugController.text.trim(),
-        lng: _lngController.text.trim().isNotEmpty ? _lngController.text.trim() : '',
-        lat: _latController.text.trim().isNotEmpty ? _latController.text.trim() : '',
+        lng: _lngController.text.trim().isNotEmpty
+            ? _lngController.text.trim()
+            : '',
+        lat: _latController.text.trim().isNotEmpty
+            ? _latController.text.trim()
+            : '',
         createdAt: DateTime.now(), // Ces champs seront mis à jour côté serveur
         updatedAt: DateTime.now(),
       );
@@ -104,7 +112,9 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Salle de classe mise à jour avec succès')),
+          const SnackBar(
+            content: Text('Salle de classe mise à jour avec succès'),
+          ),
         );
         Navigator.of(context).pop(true);
       }
@@ -122,19 +132,14 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Modifier la salle'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _submitForm,
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _submitForm),
         ],
       ),
       body: SingleChildScrollView(
@@ -155,7 +160,8 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nom de la salle'),
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -199,22 +205,29 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  ..._annexesImagesFiles.map((file) => Stack(
-                    children: [
-                      Image.file(file, width: 100, height: 100, fit: BoxFit.cover),
-                      Positioned(
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              _annexesImagesFiles.remove(file);
-                            });
-                          },
+                  ..._annexesImagesFiles.map(
+                    (file) => Stack(
+                      children: [
+                        Image.file(
+                          file,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                    ],
-                  )).toList(),
+                        Positioned(
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _annexesImagesFiles.remove(file);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.add_photo_alternate, size: 50),
                     onPressed: _pickAnnexeImages,
