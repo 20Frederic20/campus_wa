@@ -24,6 +24,9 @@ class ClassroomDto {
   @JsonKey(name: 'university_id')
   final String? universityId;
 
+  @JsonKey(name: 'university_name')
+  final String? universityName;
+
   @JsonKey(name: 'main_image')
   final String? mainImage;
 
@@ -43,16 +46,20 @@ class ClassroomDto {
     this.lng,
     this.lat,
     this.universityId,
+    this.universityName,
     this.mainImage,
     this.annexesImages,
     this.createdAtString,
     this.updatedAtString,
   });
 
-  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
-  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
+  DateTime? get createdAt =>
+      createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
+  DateTime? get updatedAt =>
+      updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
 
-  factory ClassroomDto.fromJson(Map<String, dynamic> json) => _$ClassroomDtoFromJson(json);
+  factory ClassroomDto.fromJson(Map<String, dynamic> json) =>
+      _$ClassroomDtoFromJson(json);
 
   factory ClassroomDto.create({
     required String universityId,
@@ -78,16 +85,18 @@ class ClassroomDto {
     if (id == null || name == null || slug == null) {
       throw ApiException(message: 'Missing required fields in Classroom data');
     }
-    
+
     final createdAt = this.createdAt ?? DateTime.now();
     final updatedAt = this.updatedAt ?? DateTime.now();
-    
+
     return Classroom(
       id: id!,
       name: name!,
       slug: slug!,
       lng: lng ?? '',
       lat: lat ?? '',
+      universityId: universityId ?? '',
+      UniversityName: universityName ?? '',
       mainImage: mainImage ?? '',
       annexesImages: annexesImages ?? const [],
       createdAt: createdAt,

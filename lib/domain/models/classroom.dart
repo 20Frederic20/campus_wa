@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class Classroom extends Equatable {
-
   const Classroom({
     required this.id,
     required this.name,
@@ -9,6 +8,7 @@ class Classroom extends Equatable {
     this.lng = '',
     this.lat = '',
     this.universityId = '',
+    this.UniversityName = '',
     this.mainImage = '',
     this.annexesImages = const [],
     required this.createdAt,
@@ -18,8 +18,9 @@ class Classroom extends Equatable {
   final String name;
   final String slug;
   final String lng;
-  final String lat ;
+  final String lat;
   final String universityId;
+  final String UniversityName;
   final String mainImage;
   final List<String> annexesImages;
   final DateTime createdAt;
@@ -33,6 +34,7 @@ class Classroom extends Equatable {
     lng,
     lat,
     universityId,
+    UniversityName,
     mainImage,
     annexesImages,
     createdAt,
