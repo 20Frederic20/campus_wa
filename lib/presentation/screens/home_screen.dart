@@ -199,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.8);
+    _pageController = PageController(viewportFraction: 0.9);
     _getUserLocation(); // Démarre la récup au init
   }
 
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final anyExpanded = expandedIndex != null;
     final maxPanelHeight = screenHeight * 0.9; // leave a bit of margin
     final panelHeight = anyExpanded
-        ? (expandedHeight + 100).clamp(100.0, maxPanelHeight)
+        ? expandedHeight.clamp(100.0, maxPanelHeight)
         : 100.0;
     // SI position pas prête → écran de loading/erreur SEUL
     if (_userPosition == null) {
@@ -345,8 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: OverflowBox(
                           alignment: Alignment.bottomCenter,
                           maxHeight:
-                              expandedHeight +
-                              100, // allows card to grow beyond parent
+                              expandedHeight, // allows card to grow beyond parent
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeOut,
