@@ -182,6 +182,13 @@ class ClassroomCard extends StatelessWidget {
                       ),
                       const Gap(8),
 
+                      if (classroom.universityId != null)
+                        Text(
+                          'Université : ${classroom.UniversityName}',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[600]),
+                        ),
+
                       if (classroom.lat != null) ...[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
