@@ -10,7 +10,6 @@ import 'package:campus_wa/presentation/screens/not_found_screen.dart';
 import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
 import 'package:campus_wa/presentation/screens/settings_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
-import 'package:campus_wa/presentation/screens/university_classrooms_screen.dart';
 import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -44,17 +43,6 @@ final GoRouter router = GoRouter(
           builder: (context, state) {
             final classroomId = state.pathParameters['classroomId']!;
             return EditClassroomScreen(classroomId: classroomId);
-          },
-        ),
-        GoRoute(
-          path: '/universities/:universityId/classrooms',
-          builder: (context, state) {
-            final universityId = state.pathParameters['universityId']!;
-            final universityName = state.extra as String? ?? 'l\'université';
-            return UniversityClassroomsScreen(
-              universityId: universityId,
-              universityName: universityName,
-            );
           },
         ),
         GoRoute(
