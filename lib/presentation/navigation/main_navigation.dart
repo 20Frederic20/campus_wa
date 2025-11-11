@@ -2,7 +2,6 @@ import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:campus_wa/presentation/screens/cgu_screen.dart';
-import 'package:campus_wa/presentation/screens/classroom_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/help_center_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
@@ -30,13 +29,6 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/classrooms/add',
           builder: (context, state) => const AddClassroomScreen(),
-        ),
-        GoRoute(
-          path: '/classrooms/:classroomId',
-          builder: (context, state) {
-            final id = state.pathParameters['classroomId']!;
-            return ClassroomDetailScreen(classroomId: id);
-          },
         ),
         GoRoute(
           path: '/classrooms/:classroomId/edit',
