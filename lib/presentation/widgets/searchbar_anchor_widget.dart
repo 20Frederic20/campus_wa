@@ -18,6 +18,7 @@ class SearchBarAnchorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SearchAnchor.bar(
+      barHintText: hintText,
       suggestionsBuilder: (context, controller) async {
         if (controller.text.isEmpty) {
           return [];
