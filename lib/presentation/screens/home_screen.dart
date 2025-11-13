@@ -308,6 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Row(
               children: [
+                const Gap(10),
                 Flexible(
                   child: SearchBarAnchorWidget(
                     controller: _searchController,

@@ -108,7 +108,8 @@ class MainScaffold extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    // Utilisation de withOpacity pour la transparence
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -121,10 +122,16 @@ class MainScaffold extends StatelessWidget {
                 ),
                 child: NavigationBar(
                   elevation: 0,
-                  backgroundColor: AppColors.primaryGreen,
-                  indicatorColor: Colors.white.withValues(alpha: 0.3),
+                  backgroundColor: AppColors.secondaryGreen,
+                  // Utilisation de withOpacity pour la transparence
+                  indicatorColor: Colors.white.withOpacity(0.3),
                   surfaceTintColor: Colors.transparent,
-                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+
+                  // 💡 CHANGEMENT CLÉ : AFFICHER LE LABEL UNIQUEMENT LORSQUE SÉLECTIONNÉ
+                  labelBehavior:
+                      NavigationDestinationLabelBehavior.onlyShowSelected,
+
+                  // Le style de texte est toujours nécessaire pour les labels affichés
                   labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((
                     Set<WidgetState> states,
                   ) {
@@ -132,14 +139,15 @@ class MainScaffold extends StatelessWidget {
                       return const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors
-                            .white, // Optional: set the selected text color
+                        color: AppColors.white,
                       );
                     }
+                    // Le style non sélectionné n'est techniquement pas utilisé ici,
+                    // mais il est préférable de le conserver ou de renvoyer un style par défaut.
                     return const TextStyle(
                       fontSize: 12,
-                      color: Colors.white70,
-                    ); // Unselected text style
+                      color: AppColors.white,
+                    );
                   }),
                   selectedIndex: _calculateSelectedIndex(location),
                   onDestinationSelected: (index) =>
@@ -154,28 +162,28 @@ class MainScaffold extends StatelessWidget {
                       selectedIcon: Icon(
                         Icons.home,
                         size: 20,
-                        color: Colors.white,
+                        color: AppColors.white,
                         shadows: [
-                          Shadow(blurRadius: 10.0, color: Colors.white),
+                          Shadow(blurRadius: 10.0, color: AppColors.white),
                         ],
                       ),
                       label: 'Accueil',
                     ),
                     const NavigationDestination(
                       icon: Icon(
-                        Icons.calendar_today_outlined,
+                        Icons.speaker_notes_outlined,
                         size: 18,
                         color: AppColors.white,
                       ),
                       selectedIcon: Icon(
-                        Icons.calendar_today,
+                        Icons.speaker_notes,
                         size: 20,
                         color: Colors.white,
                         shadows: [
                           Shadow(blurRadius: 10.0, color: Colors.white),
                         ],
                       ),
-                      label: 'Plannings',
+                      label: 'Flash Info',
                     ),
                     const NavigationDestination(
                       icon: Icon(
@@ -212,7 +220,7 @@ class MainScaffold extends StatelessWidget {
         location.startsWith('/settings/cgu')) {
       return 2;
     }
-    return 0; // par défaut
+    return 0;
   }
 
   /// Navigation entre les onglets
