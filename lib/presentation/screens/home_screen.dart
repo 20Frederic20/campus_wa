@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList(),
         _userPosition!.latitude,
         _userPosition!.longitude,
-        20.0,
+        8.0,
         (p) => p.latitude,
         (p) => p.longitude,
       );
