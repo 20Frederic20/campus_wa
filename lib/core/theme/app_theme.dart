@@ -40,7 +40,7 @@ class AppTheme {
     scaffoldBackgroundColor: Colors.white, // Fond blanc pour tous les écrans
     colorScheme: ColorScheme.fromSeed(
       seedColor:
-          AppColors.primaryGreen, // Utilisation de votre couleur primaire
+          AppColors.secondaryGreen, // Utilisation de votre couleur primaire
       brightness: Brightness.light,
       background: Colors.white, // Fond blanc pour le thème
       surface:
@@ -51,7 +51,7 @@ class AppTheme {
       centerTitle: true,
       elevation: 0,
       backgroundColor:
-          AppColors.primaryGreen, // Fond blanc pour la barre d'application
+          AppColors.secondaryGreen, // Fond blanc pour la barre d'application
       foregroundColor: AppColors.white, // Couleur des icônes et du texte
       titleTextStyle: TextStyle(
         color: AppColors.white,
@@ -63,7 +63,7 @@ class AppTheme {
       labelTextStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(color: AppColors.white, fontWeight: FontWeight.w500),
       ),
-      indicatorColor: AppColors.primaryGreen.withOpacity(0.2),
+      indicatorColor: AppColors.secondaryGreen.withOpacity(0.2),
     ),
   );
 }
