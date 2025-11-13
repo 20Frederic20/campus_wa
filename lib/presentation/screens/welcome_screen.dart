@@ -8,47 +8,54 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Logo de l'application
-            Image.asset('assets/img/logo.jpg', width: 150, height: 150),
-            const SizedBox(height: 40),
-            // Titre
-            const Text(
-              'Bienvenue sur Campus WA',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 60),
-            // Bouton continuer
-            ElevatedButton(
-              onPressed: () {
-                // Navigation vers l'écran d'accueil
-                context.go('/home');
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 15,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/img/welcome-background.png', fit: BoxFit.cover),
+
+          Container(color: AppColors.primaryGreen.withOpacity(0.6)),
+
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/img/logo.jpg', width: 150, height: 150),
+                const SizedBox(height: 40),
+                const Text(
+                  'Bienvenue sur Campus WA',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.white,
+                  ),
                 ),
-                backgroundColor: AppColors.primaryGreen, // Couleur par défaut
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                const SizedBox(height: 60),
+                ElevatedButton(
+                  onPressed: () {
+                    context.go('/home');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
+                    backgroundColor: AppColors.primaryGreen,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 2,
+                    shadowColor: Colors.black.withOpacity(0.2),
+                    animationDuration: const Duration(milliseconds: 200),
+                  ),
+                  child: const Text(
+                    'Continuer',
+                    style: TextStyle(fontSize: 18, color: AppColors.white),
+                  ),
                 ),
-                elevation: 2,
-                shadowColor: Colors.black.withValues(alpha: 0.2),
-                animationDuration: const Duration(
-                  milliseconds: 200,
-                ), // Animation plus fluide
-              ),
-              child: const Text(
-                'Continuer',
-                style: TextStyle(fontSize: 18, color: AppColors.white),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
