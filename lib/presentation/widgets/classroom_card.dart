@@ -186,7 +186,10 @@ class ClassroomCard extends StatelessWidget {
                         Text(
                           'Université : ${classroom.UniversityName}',
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: Colors.grey[600]),
+                              ?.copyWith(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
 
                       if (classroom.lat != null) ...[
