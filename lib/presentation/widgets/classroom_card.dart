@@ -1,8 +1,11 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_wa/core/theme/app_theme.dart';
-import 'package:campus_wa/core/utils/map_utils.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 class ClassroomCard extends StatelessWidget {
@@ -11,8 +14,9 @@ class ClassroomCard extends StatelessWidget {
     required this.classroom,
     required this.isExpanded,
     required this.onTap,
-    this.onDirections, // new
-    this.onOpenInGoogleMaps, // new
+    this.onDirections,
+    this.onOpenInGoogleMaps,
+    this.onClassroomUpdated,
   });
 
   final Classroom classroom;
@@ -20,6 +24,7 @@ class ClassroomCard extends StatelessWidget {
   final VoidCallback onTap;
   final Future<void> Function(LatLng)? onDirections;
   final Future<void> Function(LatLng)? onOpenInGoogleMaps;
+  final void Function(Classroom? updated)? onClassroomUpdated;
 
   List<String> get _allImages {
     final List<String> images = [];
@@ -52,10 +57,12 @@ class ClassroomCard extends StatelessWidget {
                       boundaryMargin: const EdgeInsets.all(20),
                       minScale: 0.5,
                       maxScale: 4.0,
-                      child: Image.network(
-                        imageUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Container(
+                        placeholder: (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => Container(
                           color: Colors.grey[900],
                           child: const Icon(
                             Icons.image_not_supported,
@@ -191,41 +198,66 @@ class ClassroomCard extends StatelessWidget {
                                 fontWeight: FontWeight.w800,
                               ),
                         ),
+                      const Gap(12),
 
-                      if (classroom.lat != null) ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                'Ouvrir dans Google Maps',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => openGoogleMaps(
-                                context: context,
-                                position: LatLng(
-                                  double.parse(classroom.lat),
-                                  double.parse(classroom.lng),
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.map_outlined,
-                                color: Colors.blue,
-                                size: 24,
-                              ),
-                              tooltip: 'Ouvrir Google Maps',
-                            ),
-                          ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final result = await context.push(
+                              '/classrooms/${classroom.id}/edit',
+                            );
+                            log(result.toString());
+                            if (result is Classroom) {
+                              onClassroomUpdated?.call(result);
+                            } else {
+                              onClassroomUpdated?.call(null);
+                            }
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Modifier cette salle'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            foregroundColor: Colors.white,
+                          ),
                         ),
-                        const Gap(8),
-                      ],
+                      ),
 
+                      const Gap(12),
+
+                      // if (classroom.lat != null) ...[
+                      //   Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       const Expanded(
+                      //         child: Text(
+                      //           'Ouvrir dans Google Maps',
+                      //           style: TextStyle(
+                      //             fontSize: 14,
+                      //             color: AppColors.textPrimary,
+                      //             fontWeight: FontWeight.w500,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       IconButton(
+                      //         onPressed: () => openGoogleMaps(
+                      //           context: context,
+                      //           position: LatLng(
+                      //             double.parse(classroom.lat),
+                      //             double.parse(classroom.lng),
+                      //           ),
+                      //         ),
+                      //         icon: const Icon(
+                      //           Icons.map_outlined,
+                      //           color: Colors.blue,
+                      //           size: 24,
+                      //         ),
+                      //         tooltip: 'Ouvrir Google Maps',
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   const Gap(8),
+                      // ],
                       if (images.isNotEmpty)
                         SizedBox(
                           height: 200,
@@ -247,22 +279,30 @@ class ClassroomCard extends StatelessWidget {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      images[index],
+                                    child: CachedNetworkImage(
+                                      imageUrl: images[index],
                                       height: 200,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Container(
-                                                height: 200,
-                                                color: Colors.grey[200],
-                                                child: const Icon(
-                                                  Icons.image_not_supported,
-                                                  size: 50,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
+                                      placeholder: (context, url) => Container(
+                                        height: 200,
+                                        color: Colors.grey[200],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                            height: 200,
+                                            color: Colors.grey[200],
+                                            child: const Icon(
+                                              Icons.image_not_supported,
+                                              size: 50,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                     ),
                                   ),
                                 ),

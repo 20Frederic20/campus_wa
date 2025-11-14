@@ -103,7 +103,7 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
         updatedAt: DateTime.now(),
       );
 
-      await di.getIt<ClassroomRepository>().updateClassroom(
+      final updated = await di.getIt<ClassroomRepository>().updateClassroom(
         widget.classroomId,
         classroom,
         _mainImageFile,
@@ -116,7 +116,7 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
             content: Text('Salle de classe mise à jour avec succès'),
           ),
         );
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pop(updated);
       }
     } catch (e) {
       setState(() {

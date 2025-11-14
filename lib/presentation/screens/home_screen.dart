@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/core/utils/map_utils.dart';
@@ -10,6 +11,7 @@ import 'package:campus_wa/presentation/widgets/classroom_card.dart';
 import 'package:campus_wa/presentation/widgets/mapbox_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
@@ -157,8 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     } else if (result.type == 'university') {
-      // Added: Handle university tap – fetch and show its classrooms
-      final universityId = result.id; // Assume 'id' is university's ID
+      final universityId = result.id;
       if (universityId == null) {
         log('Search result missing university ID');
         return;
@@ -170,11 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
             .getUniversityClassrooms(universityId);
         if (universityClassrooms != null && universityClassrooms.isNotEmpty) {
           setState(() {
-            _classrooms =
-                universityClassrooms; // Replace list with university's classrooms
-            expandedIndex = null; // Reset expansion for fresh view
+            _classrooms = universityClassrooms;
+            expandedIndex = null;
           });
-          _pageController.jumpToPage(0); // Scroll to start
+          _pageController.jumpToPage(0);
         } else {
           log('No classrooms found for university $universityId');
           if (mounted) {
@@ -196,11 +196,44 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _onClassroomUpdated(Classroom? updated) async {
+    if (updated == null) {
+      // fallback: refresh specific classroom from server or refresh list
+      return;
+    }
+
+    final index = _classrooms.indexWhere((c) => c.id == updated.id);
+    if (index != -1) {
+      setState(() {
+        _classrooms[index] = updated;
+      });
+    } else {
+      setState(() {
+        _classrooms.insert(0, updated);
+      });
+    }
+
+    final cacheManager = DefaultCacheManager();
+    if (updated.mainImage != null && updated.mainImage!.isNotEmpty) {
+      try {
+        await cacheManager.removeFile(updated.mainImage!);
+      } catch (_) {}
+    }
+    for (final url in updated.annexesImages ?? []) {
+      if (url.isNotEmpty) {
+        try {
+          await cacheManager.removeFile(url);
+        } catch (_) {}
+      }
+    }
+    // trigger a rebuild (already done by setState above)
+  }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.9);
-    _getUserLocation(); // Démarre la récup au init
+    _getUserLocation();
   }
 
   @override
@@ -394,6 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   position: destination,
                                 );
                               },
+                              onClassroomUpdated: _onClassroomUpdated,
                             ),
                           ),
                         ),
