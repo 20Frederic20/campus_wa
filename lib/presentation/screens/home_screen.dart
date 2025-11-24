@@ -331,6 +331,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         title: const Text('Carte des Universités'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            tooltip: 'Actualiser la position',
+            onPressed: _getUserLocation,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(70),
           child: Padding(
