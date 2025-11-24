@@ -6,6 +6,43 @@ part 'classroom_dto.g.dart';
 
 @JsonSerializable()
 class ClassroomDto {
+
+  const ClassroomDto({
+    this.id,
+    this.name,
+    this.slug,
+    this.lng,
+    this.lat,
+    this.universityId,
+    this.universityName,
+    this.mainImage,
+    this.annexesImages,
+    this.createdAtString,
+    this.updatedAtString,
+  });
+
+  factory ClassroomDto.fromJson(Map<String, dynamic> json) =>
+      _$ClassroomDtoFromJson(json);
+
+  factory ClassroomDto.create({
+    required String universityId,
+    required String name,
+    required String slug,
+    String lng = '',
+    String lat = '',
+    String mainImage = '',
+    List<String> annexesImages = const [],
+  }) {
+    return ClassroomDto(
+      universityId: universityId,
+      name: name,
+      slug: slug,
+      lng: lng,
+      lat: lat,
+      mainImage: mainImage,
+      annexesImages: annexesImages,
+    );
+  }
   @JsonKey(name: 'id')
   final String? id;
 
@@ -39,47 +76,10 @@ class ClassroomDto {
   @JsonKey(name: 'updated_at')
   final String? updatedAtString;
 
-  const ClassroomDto({
-    this.id,
-    this.name,
-    this.slug,
-    this.lng,
-    this.lat,
-    this.universityId,
-    this.universityName,
-    this.mainImage,
-    this.annexesImages,
-    this.createdAtString,
-    this.updatedAtString,
-  });
-
   DateTime? get createdAt =>
       createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
   DateTime? get updatedAt =>
       updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
-
-  factory ClassroomDto.fromJson(Map<String, dynamic> json) =>
-      _$ClassroomDtoFromJson(json);
-
-  factory ClassroomDto.create({
-    required String universityId,
-    required String name,
-    required String slug,
-    String lng = '',
-    String lat = '',
-    String mainImage = '',
-    List<String> annexesImages = const [],
-  }) {
-    return ClassroomDto(
-      universityId: universityId,
-      name: name,
-      slug: slug,
-      lng: lng,
-      lat: lat,
-      mainImage: mainImage,
-      annexesImages: annexesImages,
-    );
-  }
 
   Classroom toDomain() {
     if (id == null || name == null || slug == null) {
