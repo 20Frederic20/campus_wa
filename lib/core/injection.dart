@@ -1,12 +1,14 @@
 import 'package:campus_wa/data/local/classroom_local_datasource_impl.dart';
 import 'package:campus_wa/data/local/university_local_datasource_impl.dart';
 import 'package:campus_wa/data/repositories/claassroom_repository_impl.dart';
+import 'package:campus_wa/data/repositories/news_repository_impl.dart';
 import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/data/services/search_service.dart';
 import 'package:campus_wa/domain/local/classroom_local_datasource.dart';
 import 'package:campus_wa/domain/local/university_local_datasource.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
+import 'package:campus_wa/domain/repositories/news_repository.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -52,5 +54,8 @@ Future<void> setupDependencies() async {
         apiService: getIt<ApiService>(),
         classroomLocal: getIt<ClassroomLocalDataSource>(),
       ),
+    )
+    ..registerLazySingleton<NewsRepository>(
+      () => NewsRepositoryImpl(apiService: getIt<ApiService>()),
     );
 }
