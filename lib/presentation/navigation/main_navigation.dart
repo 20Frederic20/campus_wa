@@ -1,10 +1,12 @@
 import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/presentation/screens/add_classroom_screen.dart';
+import 'package:campus_wa/presentation/screens/add_news_screen.dart';
 import 'package:campus_wa/presentation/screens/add_university_screen.dart';
 import 'package:campus_wa/presentation/screens/cgu_screen.dart';
 import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/help_center_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
+import 'package:campus_wa/presentation/screens/news_screen.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
 import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
 import 'package:campus_wa/presentation/screens/settings_screen.dart';
@@ -13,7 +15,6 @@ import 'package:campus_wa/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Configuration principale du router avec GoRouter
 final GoRouter router = GoRouter(
   errorBuilder: (context, state) => const NotFoundScreen(),
   routes: [
@@ -80,6 +81,11 @@ final GoRouter router = GoRouter(
           path: '/settings/privacy',
           builder: (context, state) => const PrivacyPolicyScreen(),
         ),
+        GoRoute(path: '/news', builder: (context, state) => const NewsScreen()),
+        GoRoute(
+          path: '/news/add',
+          builder: (context, state) => AddNewsScreen(),
+        ),
         GoRoute(
           path: ':splat(.*)',
           builder: (context, state) => const NotFoundScreen(),
@@ -89,7 +95,6 @@ final GoRouter router = GoRouter(
   ],
 );
 
-/// Scaffold principal avec barre de navigation inférieure
 class MainScaffold extends StatelessWidget {
   const MainScaffold({super.key, required this.child});
 
@@ -108,7 +113,6 @@ class MainScaffold extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    // Utilisation de withOpacity pour la transparence
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
@@ -123,15 +127,12 @@ class MainScaffold extends StatelessWidget {
                 child: NavigationBar(
                   elevation: 0,
                   backgroundColor: AppColors.secondaryGreen,
-                  // Utilisation de withOpacity pour la transparence
                   indicatorColor: Colors.white.withOpacity(0.3),
                   surfaceTintColor: Colors.transparent,
 
-                  // 💡 CHANGEMENT CLÉ : AFFICHER LE LABEL UNIQUEMENT LORSQUE SÉLECTIONNÉ
                   labelBehavior:
                       NavigationDestinationLabelBehavior.onlyShowSelected,
 
-                  // Le style de texte est toujours nécessaire pour les labels affichés
                   labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((
                     Set<WidgetState> states,
                   ) {
@@ -142,8 +143,6 @@ class MainScaffold extends StatelessWidget {
                         color: AppColors.white,
                       );
                     }
-                    // Le style non sélectionné n'est techniquement pas utilisé ici,
-                    // mais il est préférable de le conserver ou de renvoyer un style par défaut.
                     return const TextStyle(
                       fontSize: 12,
                       color: AppColors.white,
@@ -156,12 +155,12 @@ class MainScaffold extends StatelessWidget {
                     const NavigationDestination(
                       icon: Icon(
                         Icons.home_outlined,
-                        size: 18,
+                        size: 22,
                         color: AppColors.white,
                       ),
                       selectedIcon: Icon(
                         Icons.home,
-                        size: 20,
+                        size: 22,
                         color: AppColors.white,
                         shadows: [
                           Shadow(blurRadius: 10.0, color: AppColors.white),
@@ -172,12 +171,12 @@ class MainScaffold extends StatelessWidget {
                     const NavigationDestination(
                       icon: Icon(
                         Icons.speaker_notes_outlined,
-                        size: 18,
+                        size: 22,
                         color: AppColors.white,
                       ),
                       selectedIcon: Icon(
                         Icons.speaker_notes,
-                        size: 20,
+                        size: 22,
                         color: Colors.white,
                         shadows: [
                           Shadow(blurRadius: 10.0, color: Colors.white),
@@ -188,12 +187,12 @@ class MainScaffold extends StatelessWidget {
                     const NavigationDestination(
                       icon: Icon(
                         Icons.settings_outlined,
-                        size: 18,
+                        size: 22,
                         color: AppColors.white,
                       ),
                       selectedIcon: Icon(
                         Icons.settings,
-                        size: 20,
+                        size: 22,
                         color: Colors.white,
                         shadows: [
                           Shadow(blurRadius: 10.0, color: Colors.white),
@@ -208,13 +207,12 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  /// Calcule quel onglet est sélectionné
   static int _calculateSelectedIndex(String location) {
     if (location == '/home' ||
         location.startsWith('/universities/') ||
         location == '/universities/add') {
       return 0;
-    } else if (location.startsWith('/plannings')) {
+    } else if (location.startsWith('/news')) {
       return 1;
     } else if (location.startsWith('/settings') ||
         location.startsWith('/settings/cgu')) {
@@ -223,14 +221,13 @@ class MainScaffold extends StatelessWidget {
     return 0;
   }
 
-  /// Navigation entre les onglets
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
         context.go('/home');
         break;
       case 1:
-        context.go('/plannings');
+        context.go('/news');
         break;
       case 2:
         context.go('/settings');
