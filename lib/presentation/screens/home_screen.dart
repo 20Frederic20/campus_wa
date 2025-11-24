@@ -275,6 +275,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMap() {
     final center = _userPosition ?? const LatLng(/* fallback coords */ 0, 0);
+
+    if (expandedIndex != null &&
+        expandedIndex! >= 0 &&
+        expandedIndex! < _classrooms.length) {
+      final classroom = _classrooms[expandedIndex!];
+      final marker = LatLng(
+        double.parse(classroom.lat),
+        double.parse(classroom.lng),
+      );
+      return MapboxMapWidget(center: center, markers: [marker]);
+    }
+
     return MapboxMapWidget(center: center, markers: _nearbyUniversities);
   }
 
