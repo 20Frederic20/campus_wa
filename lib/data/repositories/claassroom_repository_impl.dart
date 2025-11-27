@@ -41,7 +41,7 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         lng: classroom.lng,
         lat: classroom.lat,
       );
-      FormData formData = FormData.fromMap({
+      final FormData formData = FormData.fromMap({
         ...dto.toJson(),
         if (mainImage != null)
           'main_image': await MultipartFile.fromFile(

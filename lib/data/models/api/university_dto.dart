@@ -6,27 +6,6 @@ part 'university_dto.g.dart';
 
 @JsonSerializable()
 class UniversityDto {
-  @JsonKey()
-  final String? id;
-  @JsonKey()
-  final String? name;
-  @JsonKey()
-  final String? slug;
-  @JsonKey(name: 'created_at')
-  final String? createdAtString;
-  @JsonKey(name: 'updated_at')
-  final String? updatedAtString;
-  @JsonKey(name: 'classrooms_count')
-  final int? classroomsCount;
-  @JsonKey()
-  final String? description;
-  @JsonKey()
-  final String? lng;
-  @JsonKey()
-  final String? lat;
-  @JsonKey()
-  final String? address;
-  
   UniversityDto({
     this.id,
     this.name,
@@ -40,14 +19,9 @@ class UniversityDto {
     this.address,
   });
 
-  DateTime? get createdAt => createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
-  DateTime? get updatedAt => updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
-
   // Désérialisation JSON
-  factory UniversityDto.fromJson(Map<String, dynamic> json) => _$UniversityDtoFromJson(json);
-
-  // Sérialisation JSON
-  Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
+  factory UniversityDto.fromJson(Map<String, dynamic> json) =>
+      _$UniversityDtoFromJson(json);
 
   // Factory pour la création d'une nouvelle université
   factory UniversityDto.create({
@@ -68,30 +42,6 @@ class UniversityDto {
     );
   }
 
-  // Convertir le DTO en modèle de domaine
-  University toDomain() {
-    if (id == null || name == null || slug == null) {
-      throw ApiException(message: 'Missing required fields in University data');
-    }
-    
-    final createdAt = this.createdAt ?? DateTime.now();
-    final updatedAt = this.updatedAt ?? DateTime.now();
-    
-    return University(
-      id: id!,
-      name: name!,
-      slug: slug!,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      description: description ?? '',
-      lng: lng ?? '',
-      lat: lat ?? '',
-      address: address ?? '',
-      classroomsCount: classroomsCount ?? 0,
-      classrooms: const [], // Les salles de classe peuvent être chargées séparément
-    );
-  }
-
   factory UniversityDto.fromDomain(University university) {
     return UniversityDto(
       id: university.id,
@@ -104,6 +54,59 @@ class UniversityDto {
       classroomsCount: university.classroomsCount,
       createdAtString: university.createdAt.toIso8601String(),
       updatedAtString: university.updatedAt.toIso8601String(),
+    );
+  }
+  @JsonKey()
+  final String? id;
+  @JsonKey()
+  final String? name;
+  @JsonKey()
+  final String? slug;
+  @JsonKey(name: 'created_at')
+  final String? createdAtString;
+  @JsonKey(name: 'updated_at')
+  final String? updatedAtString;
+  @JsonKey(name: 'classrooms_count')
+  final int? classroomsCount;
+  @JsonKey()
+  final String? description;
+  @JsonKey()
+  final String? lng;
+  @JsonKey()
+  final String? lat;
+  @JsonKey()
+  final String? address;
+
+  DateTime? get createdAt =>
+      createdAtString != null ? DateTime.tryParse(createdAtString!) : null;
+  DateTime? get updatedAt =>
+      updatedAtString != null ? DateTime.tryParse(updatedAtString!) : null;
+
+  // Sérialisation JSON
+  Map<String, dynamic> toJson() => _$UniversityDtoToJson(this);
+
+  // Convertir le DTO en modèle de domaine
+  University toDomain() {
+    if (id == null || name == null || slug == null) {
+      throw ApiException(message: 'Missing required fields in University data');
+    }
+
+    final createdAt = this.createdAt ?? DateTime.now();
+    final updatedAt = this.updatedAt ?? DateTime.now();
+
+    return University(
+      id: id!,
+      name: name!,
+      slug: slug!,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      description: description ?? '',
+      lng: lng ?? '',
+      lat: lat ?? '',
+      address: address ?? '',
+      classroomsCount: classroomsCount ?? 0,
+      classrooms:
+          const [], // Les salles de classe peuvent être chargées séparément
     );
   }
 }

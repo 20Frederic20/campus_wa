@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditClassroomScreen extends StatefulWidget {
-  final String classroomId;
-
   const EditClassroomScreen({Key? key, required this.classroomId})
     : super(key: key);
+  final String classroomId;
 
   @override
   _EditClassroomScreenState createState() => _EditClassroomScreenState();
@@ -23,7 +22,7 @@ class _EditClassroomScreenState extends State<EditClassroomScreen> {
   final _latController = TextEditingController();
 
   File? _mainImageFile;
-  List<File> _annexesImagesFiles = [];
+  final List<File> _annexesImagesFiles = [];
   bool _isLoading = true;
   String? _errorMessage;
   String? _selectedUniversityId;

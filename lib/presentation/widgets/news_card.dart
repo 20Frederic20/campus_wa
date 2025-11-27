@@ -4,13 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:campus_wa/domain/models/news.dart';
 
 class NewsCard extends StatelessWidget {
-  final News news;
-  final bool isExpanded;
-  final VoidCallback? onTap;
-  final VoidCallback? onShare;
-  final VoidCallback? onBookmark;
-  final ValueChanged<News?>? onNewsUpdated;
-
   const NewsCard({
     super.key,
     required this.news,
@@ -20,6 +13,12 @@ class NewsCard extends StatelessWidget {
     this.onBookmark,
     this.onNewsUpdated,
   });
+  final News news;
+  final bool isExpanded;
+  final VoidCallback? onTap;
+  final VoidCallback? onShare;
+  final VoidCallback? onBookmark;
+  final ValueChanged<News?>? onNewsUpdated;
 
   void _openFullScreenImage(
     BuildContext context,

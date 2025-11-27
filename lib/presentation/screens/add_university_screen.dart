@@ -51,8 +51,10 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
         classrooms: [],
       );
 
-      final response = await di.getIt<UniversityRepository>().createUniversity(university);
-      
+      final response = await di.getIt<UniversityRepository>().createUniversity(
+        university,
+      );
+
       if (mounted) {
         if (response.id.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -68,9 +70,9 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur: ${e.toString()}')));
       }
     } finally {
       if (mounted) {
@@ -147,7 +149,7 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
                               labelText: 'Latitude',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                               signed: true,
                             ),
@@ -161,7 +163,7 @@ class _AddUniversityScreenState extends State<AddUniversityScreen> {
                               labelText: 'Longitude',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                               signed: true,
                             ),

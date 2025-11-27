@@ -61,7 +61,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
         final remoteList = await getUniversities(); // ignore fallback ici
         if (remoteList != null) {
           await _universityLocal.cacheUniversities(
-            remoteList.map((u) => UniversityDto.fromDomain(u)).toList(),
+            remoteList.map(UniversityDto.fromDomain).toList(),
           );
         } else {
           // Handle the case where remoteList is null, maybe log a warning or skip caching
@@ -104,7 +104,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
         final domainList = dtos.map((d) => d.toDomain()).toList();
 
         // Cache mémoire + persistant
-        for (final u in domainList) _universityCache[u.id] = u;
+        for (final u in domainList) {
+          _universityCache[u.id] = u;
+        }
         await _universityLocal.cacheUniversities(dtos);
 
         return domainList;
@@ -119,7 +121,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
         final cachedDtos = await _universityLocal.getCachedUniversities();
         if (cachedDtos == null) return null;
         final domainList = cachedDtos.map((d) => d.toDomain()).toList();
-        for (final u in domainList) _universityCache[u.id] = u;
+        for (final u in domainList) {
+          _universityCache[u.id] = u;
+        }
         return domainList;
       }
       throw ApiException(
@@ -177,7 +181,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
           .toList();
       final domainList = dtos.map((d) => d.toDomain()).toList();
 
-      for (final c in domainList) _classroomCache[c.id] = c;
+      for (final c in domainList) {
+        _classroomCache[c.id] = c;
+      }
       await _classroomLocal.cacheClassroomsByUniversityId(universityId, dtos);
 
       return domainList;
@@ -187,7 +193,9 @@ class UniversityRepositoryImpl implements UniversityRepository {
             .getCachedClassroomsByUniversityId(universityId);
         if (cachedDtos == null) return null;
         final domainList = cachedDtos.map((d) => d.toDomain()).toList();
-        for (final c in domainList) _classroomCache[c.id] = c;
+        for (final c in domainList) {
+          _classroomCache[c.id] = c;
+        }
         return domainList;
       }
       rethrow;

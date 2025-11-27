@@ -111,9 +111,9 @@ Contact : contact@campuswa.com
             ),
 
             const SizedBox(height: 20),
-            Center(
+            const Center(
               child: TextButton(
-                child: const Text('Refuser → quitter l’app'),
+                child: Text('Refuser → quitter l’app'),
                 onPressed: SystemNavigator.pop, // ferme l’app
               ),
             ),

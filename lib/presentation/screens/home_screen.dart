@@ -11,6 +11,7 @@ import 'package:campus_wa/presentation/widgets/classroom_card.dart';
 import 'package:campus_wa/presentation/widgets/mapbox_map_widget.dart';
 import 'package:campus_wa/presentation/widgets/searchbar_anchor_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
@@ -44,36 +45,36 @@ class _HomeScreenState extends State<HomeScreen> {
       _locationError = null;
     });
 
-    bool serviceEnabled;
-    LocationPermission permission;
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      setState(() {
-        _locationError = 'Le service de localisation est désactivé.';
-      });
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
         setState(() {
-          _locationError = 'Permission de localisation refusée.';
+          _locationError = 'Le service de localisation est désactivé.';
         });
         return;
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      setState(() {
-        _locationError = 'Permission de localisation refusée définitivement.';
-      });
-      return;
-    }
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _locationError = 'Permission de localisation refusée.';
+          });
+          return;
+        }
+      }
 
-    try {
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _locationError = 'Permission de localisation refusée définitivement.';
+        });
+        return;
+      }
+
       final classrooms = await di
           .getIt<ClassroomRepository>()
           .getRandomClassrooms();
@@ -87,6 +88,30 @@ class _HomeScreenState extends State<HomeScreen> {
         _mapKey =
             '${newPosition.latitude}_${newPosition.longitude}'; // Change key → rebuild map
       });
+    } on MissingPluginException catch (e) {
+      // Geolocation not supported on this platform (e.g., Linux desktop)
+      log('Geolocation not supported on this platform: $e');
+
+      // Use a default location (e.g., Dakar, Senegal)
+      const defaultPosition = LatLng(14.6937, -17.4441);
+
+      try {
+        final classrooms = await di
+            .getIt<ClassroomRepository>()
+            .getRandomClassrooms();
+
+        setState(() {
+          _userPosition = defaultPosition;
+          _classrooms = classrooms!;
+          _mapKey = '${defaultPosition.latitude}_${defaultPosition.longitude}';
+          _locationError =
+              'Localisation non disponible sur cette plateforme. Position par défaut utilisée.';
+        });
+      } catch (e) {
+        setState(() {
+          _locationError = 'Erreur lors de la récupération des salles: $e';
+        });
+      }
     } catch (e) {
       setState(() {
         _locationError = 'Erreur lors de la récupération de la position: $e';
@@ -214,9 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final cacheManager = DefaultCacheManager();
-    if (updated.mainImage != null && updated.mainImage!.isNotEmpty) {
+    if (updated.mainImage.isNotEmpty) {
       try {
-        await cacheManager.removeFile(updated.mainImage!);
+        await cacheManager.removeFile(updated.mainImage);
       } catch (_) {}
     }
     for (final url in updated.annexesImages ?? []) {

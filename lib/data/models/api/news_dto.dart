@@ -5,6 +5,14 @@ part 'news_dto.g.dart';
 
 @JsonSerializable()
 class NewsDto {
+  const NewsDto({
+    required this.id,
+    required this.title,
+    this.content,
+    this.isPublished,
+    this.publishedAt,
+    this.filesUrls,
+  });
 
   factory NewsDto.fromJson(Map<String, dynamic> json) =>
       _$NewsDtoFromJson(json);
@@ -26,14 +34,6 @@ class NewsDto {
       filesUrls: filesUrls,
     );
   }
-  const NewsDto({
-    required this.id,
-    required this.title,
-    this.content,
-    this.isPublished,
-    this.publishedAt,
-    this.filesUrls,
-  });
   @JsonKey(name: 'id')
   final String id;
 

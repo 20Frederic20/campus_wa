@@ -4,7 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class ApiService {
-  
+  // Factory constructor pour retourner toujours la même instance
+  factory ApiService() => _instance;
+
   // Constructeur privé
   ApiService._internal() {
     _dio = Dio(
@@ -25,12 +27,13 @@ class ApiService {
         PrettyDioLogger(
           requestHeader: true,
           requestBody: true,
-          responseHeader: true,  // Ajout des headers de réponse
+          responseHeader: true, // Ajout des headers de réponse
           responseBody: true,
           error: true,
-          compact: false,        // Format plus détaillé
-          maxWidth: 90,         // Largeur maximale du log
-          logPrint: (obj) {     // Personnalisation de l'affichage
+          compact: false, // Format plus détaillé
+          maxWidth: 90, // Largeur maximale du log
+          logPrint: (obj) {
+            // Personnalisation de l'affichage
             debugPrint('🌐 API Call: $obj');
           },
         ),
@@ -44,8 +47,12 @@ class ApiService {
             return handler.next(options);
           },
           onResponse: (response, handler) {
-            debugPrint('📥 Response received from: ${response.requestOptions.uri}');
-            debugPrint('⏱️ Response time: ${response.requestOptions.extra['timeStamp']}');
+            debugPrint(
+              '📥 Response received from: ${response.requestOptions.uri}',
+            );
+            debugPrint(
+              '⏱️ Response time: ${response.requestOptions.extra['timeStamp']}',
+            );
             return handler.next(response);
           },
           onError: (error, handler) {
@@ -65,10 +72,12 @@ class ApiService {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          final startTime = response.requestOptions.extra['timeStamp'] as DateTime;
+          final startTime =
+              response.requestOptions.extra['timeStamp'] as DateTime;
           final endTime = DateTime.now();
           final duration = endTime.difference(startTime);
-          response.requestOptions.extra['timeStamp'] = '${duration.inMilliseconds}ms';
+          response.requestOptions.extra['timeStamp'] =
+              '${duration.inMilliseconds}ms';
           return handler.next(response);
         },
       ),
@@ -88,9 +97,6 @@ class ApiService {
   static final ApiService _instance = ApiService._internal();
   late final Dio _dio;
   final String _baseUrl = dotenv.env['API_BASE_URL'] ?? '';
-
-  // Factory constructor pour retourner toujours la même instance
-  factory ApiService() => _instance;
 
   // Méthode pour mettre à jour le token d'authentification
   void updateAuthToken(String? token) {

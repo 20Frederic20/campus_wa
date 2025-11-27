@@ -28,9 +28,7 @@ class ClassroomCard extends StatelessWidget {
 
   List<String> get _allImages {
     final List<String> images = [];
-    if (classroom.mainImage != null) {
-      images.add(classroom.mainImage!);
-    }
+    images.add(classroom.mainImage!);
     images.addAll(
       classroom.annexesImages ?? [],
     ); // Assuming annexesImages is List<String>?
@@ -77,8 +75,9 @@ class ClassroomCard extends StatelessWidget {
                 Positioned.fill(
                   child: GestureDetector(
                     onVerticalDragEnd: (details) {
-                      if (details.velocity.pixelsPerSecond.dy > 300)
+                      if (details.velocity.pixelsPerSecond.dy > 300) {
                         Navigator.of(routeContext).pop();
+                      }
                     },
                   ),
                 ),
@@ -92,7 +91,7 @@ class ClassroomCard extends StatelessWidget {
                       onTap: () => Navigator.of(routeContext).pop(),
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.black54,
                           shape: BoxShape.circle,
                         ),
@@ -189,15 +188,13 @@ class ClassroomCard extends StatelessWidget {
                       ),
                       const Gap(8),
 
-                      if (classroom.universityId != null)
-                        Text(
-                          'Université : ${classroom.UniversityName}',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w800,
-                              ),
+                      Text(
+                        'Université : ${classroom.UniversityName}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w800,
                         ),
+                      ),
                       const Gap(12),
 
                       SizedBox(

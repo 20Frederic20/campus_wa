@@ -4,6 +4,8 @@ import 'package:campus_wa/domain/repositories/news_repository.dart';
 import 'package:flutter/material.dart';
 
 class AddNewsScreen extends StatefulWidget {
+  const AddNewsScreen({super.key});
+
   @override
   _AddNewsScreenState createState() => _AddNewsScreenState();
 }
@@ -43,7 +45,13 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                   }
                   final title = _titleController.text;
                   final content = _contentController.text;
-                  final news = News(id: '', title: title, content: content);
+                  final news = News(
+                    id: '',
+                    title: title,
+                    content: content,
+                    isPublished: true,
+                    publishedAt: DateTime.now(),
+                  );
                   final newsRepository = di.getIt<NewsRepository>();
                   try {
                     await newsRepository.createNews(news, null);

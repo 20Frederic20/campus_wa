@@ -8,12 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class AddClassroomScreen extends StatefulWidget {
-  const AddClassroomScreen({
-    super.key,
-    this.universityId,
-  });
+  const AddClassroomScreen({super.key, this.universityId});
 
   final String? universityId;
 
@@ -27,7 +23,7 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
   final _slugController = TextEditingController();
   final _lngController = TextEditingController();
   final _latController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _isLoadingUniversities = true;
   String? _errorMessage;
@@ -93,7 +89,9 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Les permissions de localisation sont définitivement refusées.'),
+          content: Text(
+            'Les permissions de localisation sont définitivement refusées.',
+          ),
         ),
       );
       return;
@@ -110,7 +108,9 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de la récupération de la position: ${e.toString()}'),
+          content: Text(
+            'Erreur lors de la récupération de la position: ${e.toString()}',
+          ),
         ),
       );
     }
@@ -133,10 +133,13 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
 
   Future<void> _loadUniversities() async {
     try {
-      final universities = await di.getIt<UniversityRepository>().getUniversities();
+      final universities = await di
+          .getIt<UniversityRepository>()
+          .getUniversities();
       setState(() {
         _universities = universities!;
-        _selectedUniversityId = widget.universityId ?? 
+        _selectedUniversityId =
+            widget.universityId ??
             (universities.isNotEmpty ? universities.first.id : null);
         _isLoadingUniversities = false;
       });
@@ -162,15 +165,19 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
         universityId: _selectedUniversityId!,
         name: _nameController.text.trim(),
         slug: _slugController.text.trim(),
-        lng: _lngController.text.trim().isNotEmpty ? _lngController.text.trim() : '',
-        lat: _latController.text.trim().isNotEmpty ? _latController.text.trim() : '',
+        lng: _lngController.text.trim().isNotEmpty
+            ? _lngController.text.trim()
+            : '',
+        lat: _latController.text.trim().isNotEmpty
+            ? _latController.text.trim()
+            : '',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
       await di.getIt<ClassroomRepository>().createClassroom(
         classroom,
         _mainImageFile,
-        annexesImages: _annexesImagesFiles
+        annexesImages: _annexesImagesFiles,
       );
 
       if (mounted) {
@@ -205,207 +212,238 @@ class __$AddClassroomScreenState extends State<AddClassroomScreen> {
         ],
       ),
       body: _isLoadingUniversities
-      ? const Center(child: CircularProgressIndicator())
-      : SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (_errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedUniversityId,
-                  decoration: const InputDecoration(
-                    labelText: 'Université*',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _universities.map((university) {
-                    return DropdownMenuItem<String>(
-                      value: university.id,
-                      child: Text(university.name),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedUniversityId = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez sélectionner une université';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom de la salle*',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer un nom';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                TextFormField(
-                  controller: _slugController,
-                  decoration: const InputDecoration(
-                    labelText: 'Libelle*',
-                    hintText: 'ex: salle-101',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer un libelle';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                const Text(
-                  'Coordonnées (optionnel)',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                
-                const SizedBox(height: 16),
-                Row(
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedUniversityId,
+                      decoration: const InputDecoration(
+                        labelText: 'Université*',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _universities.map((university) {
+                        return DropdownMenuItem<String>(
+                          value: university.id,
+                          child: Text(university.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedUniversityId = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez sélectionner une université';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Nom de la salle*',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer un nom';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _slugController,
+                      decoration: const InputDecoration(
+                        labelText: 'Libelle*',
+                        hintText: 'ex: salle-101',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer un libelle';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
                     const Text(
                       'Coordonnées (optionnel)',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    TextButton.icon(
-                      icon: const Icon(Icons.my_location, size: 18),
-                      label: const Text('Ma position'),
-                      onPressed: _getCurrentLocation,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _latController,
-                        decoration: const InputDecoration(
-                          labelText: 'Latitude',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.location_on, size: 20),
-                        ),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _lngController,
-                        decoration: const InputDecoration(
-                          labelText: 'Longitude',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.location_on, size: 20),
-                        ),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      ),
-                    ),
-                  ],
-                ),
+                    const SizedBox(height: 8),
 
-                const SizedBox(height: 24),
-                const Text('Image principale', style: TextStyle(fontWeight: FontWeight.bold)),
-                GestureDetector(
-                  onTap: _pickMainImage,
-                  child: Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: _mainImageFile != null
-                        ? Image.file(_mainImageFile!, fit: BoxFit.cover)
-                        : const Center(child: Icon(Icons.add_a_photo, size: 40)),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-                const Text('Images annexes', style: TextStyle(fontWeight: FontWeight.bold)),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    ..._annexesImagesFiles.map((file) => Stack(
+                    const SizedBox(height: 16),
+                    Row(
                       children: [
-                        Image.file(file, width: 100, height: 100, fit: BoxFit.cover),
-                        Positioned(
-                          right: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.remove_circle, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                _annexesImagesFiles.remove(file);
-                              });
-                            },
+                        const Text(
+                          'Coordonnées (optionnel)',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton.icon(
+                          icon: const Icon(Icons.my_location, size: 18),
+                          label: const Text('Ma position'),
+                          onPressed: _getCurrentLocation,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _latController,
+                            decoration: const InputDecoration(
+                              labelText: 'Latitude',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.location_on, size: 20),
+                            ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _lngController,
+                            decoration: const InputDecoration(
+                              labelText: 'Longitude',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.location_on, size: 20),
+                            ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                           ),
                         ),
                       ],
-                    )),
+                    ),
+
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Image principale',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     GestureDetector(
-                      onTap: _pickAnnexImage,
+                      onTap: _pickMainImage,
                       child: Container(
-                        width: 100,
-                        height: 100,
+                        height: 150,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.add, size: 30),
+                        child: _mainImageFile != null
+                            ? Image.file(_mainImageFile!, fit: BoxFit.cover)
+                            : const Center(
+                                child: Icon(Icons.add_a_photo, size: 40),
+                              ),
                       ),
+                    ),
+
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Images annexes',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ..._annexesImagesFiles.map(
+                          (file) => Stack(
+                            children: [
+                              Image.file(
+                                file,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                right: 0,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.remove_circle,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _annexesImagesFiles.remove(file);
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: _pickAnnexImage,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.add, size: 30),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        textStyle: Theme.of(
+                          context,
+                        ).textTheme.labelLarge?.copyWith(inherit: true),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Ajouter la salle'),
                     ),
                   ],
                 ),
-                
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      inherit: true,
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20, 
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white, 
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text('Ajouter la salle'),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
     );
   }
 }

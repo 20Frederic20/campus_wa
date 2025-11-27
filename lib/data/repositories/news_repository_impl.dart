@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:campus_wa/core/exceptions/api_exception.dart';
 import 'package:campus_wa/data/models/api/news_dto.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/domain/models/news.dart';
@@ -35,21 +36,54 @@ class NewsRepositoryImpl implements NewsRepository {
 
   @override
   Future<News> createNews(News news, List<File?>? files) async {
-    final formData = FormData.fromMap({
-      'title': news.title,
-      'content': news.content,
-      'is_published': news.isPublished,
-      'published_at': news.publishedAt?.toIso8601String(),
-      'files': [
-        for (final file in files ?? <File>[]) // add null check
-          if (file != null) // add null check
-            await MultipartFile.fromFile(
-              file.path,
-              filename: file.path?.split('/').last ?? '',
-            ),
-      ],
-    });
-    final response = await _apiService.post('/news', data: formData);
-    return NewsDto.fromJson(response.data).toDomain();
+    try {
+      // Prepare the form data map
+      final Map<String, dynamic> formDataMap = {
+        'title': news.title,
+        'content': news.content,
+        // Convert boolean to integer (0 or 1) for FormData compatibility
+        'is_published': (news.isPublished ?? true) ? 1 : 0,
+        'published_at':
+            news.publishedAt?.toIso8601String() ??
+            DateTime.now().toIso8601String(),
+      };
+
+      // Only add files if there are actual files to upload
+      if (files != null && files.isNotEmpty) {
+        final filesList = <MultipartFile>[];
+        for (final file in files) {
+          if (file != null) {
+            filesList.add(
+              await MultipartFile.fromFile(
+                file.path,
+                filename: file.path.split('/').last,
+              ),
+            );
+          }
+        }
+        if (filesList.isNotEmpty) {
+          formDataMap['files'] = filesList;
+        }
+      }
+
+      final formData = FormData.fromMap(formDataMap);
+
+      // Send with proper headers for multipart/form-data
+      final response = await _apiService.post(
+        '/news',
+        data: formData,
+        headers: {'Content-Type': 'multipart/form-data'},
+      );
+
+      if (response.data is Map<String, dynamic>) {
+        return NewsDto.fromJson(response.data).toDomain();
+      }
+      throw Exception('Format de réponse inattendu');
+    } on DioException catch (e) {
+      throw ApiException(
+        message: 'Erreur lors de la création: ${e.message}',
+        statusCode: e.response?.statusCode,
+      );
+    }
   }
 }

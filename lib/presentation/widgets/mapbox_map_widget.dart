@@ -100,24 +100,20 @@ class _MapboxMapWidgetState extends State<MapboxMapWidget> {
     _circleAnnotations.clear();
 
     final center = widget.center;
-    if (center != null) {
-      final centerOptions = CircleAnnotationOptions(
-        geometry: Point(
-          coordinates: Position(center.longitude, center.latitude),
-        ),
-        circleColor: AppColors.primaryBlue.value, // blue for user
-        circleRadius: 10.0,
-        circleStrokeColor: AppColors.white.value,
-        circleStrokeWidth: 1.5,
-      );
-      try {
-        final centerAnn = await _circleAnnotationManager!.create(centerOptions);
-        _circleAnnotations.add(centerAnn);
-      } catch (e) {
-        // ignore but log
-        // ignore: avoid_print
-        print('Center marker creation error: $e');
-      }
+    final centerOptions = CircleAnnotationOptions(
+      geometry: Point(coordinates: Position(center.longitude, center.latitude)),
+      circleColor: AppColors.primaryBlue.value, // blue for user
+      circleRadius: 10.0,
+      circleStrokeColor: AppColors.white.value,
+      circleStrokeWidth: 1.5,
+    );
+    try {
+      final centerAnn = await _circleAnnotationManager!.create(centerOptions);
+      _circleAnnotations.add(centerAnn);
+    } catch (e) {
+      // ignore but log
+      // ignore: avoid_print
+      print('Center marker creation error: $e');
     }
     final markers = widget.markers ?? [];
     for (final m in markers) {
