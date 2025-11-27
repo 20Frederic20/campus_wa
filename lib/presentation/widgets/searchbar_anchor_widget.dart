@@ -20,7 +20,7 @@ class SearchBarAnchorWidget extends StatelessWidget {
     return SearchAnchor.bar(
       barHintText: hintText,
       suggestionsBuilder: (context, controller) async {
-        if (controller.text.isEmpty) {
+        if (controller.text.isEmpty || controller.text.length < 3) {
           return [];
         }
 
