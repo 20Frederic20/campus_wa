@@ -75,12 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      final classrooms = await di
-          .getIt<ClassroomRepository>()
-          .getRandomClassrooms();
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
+      final classrooms = await di
+          .getIt<ClassroomRepository>()
+          .getRandomClassrooms(lat: position.latitude, lng: position.longitude);
       final newPosition = LatLng(position.latitude, position.longitude);
       setState(() {
         _userPosition = newPosition;

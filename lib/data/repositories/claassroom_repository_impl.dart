@@ -178,11 +178,19 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   }
 
   @override
-  Future<List<Classroom>?> getClassrooms({String? query}) async {
+  Future<List<Classroom>?> getClassrooms({
+    String? query,
+    double? lat,
+    double? lng,
+  }) async {
     try {
       final response = await _apiService.get(
         '/classrooms?',
-        params: query != null ? {'search': query} : null,
+        params: {
+          if (query != null) 'search': query,
+          if (lat != null) 'lat': lat,
+          if (lng != null) 'lng': lng,
+        },
       );
       if (response.data is Map<String, dynamic> &&
           response.data['classrooms'] is List) {
@@ -206,9 +214,15 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   }
 
   @override
-  Future<List<Classroom>?> getRandomClassrooms() async {
+  Future<List<Classroom>?> getRandomClassrooms({
+    double? lat,
+    double? lng,
+  }) async {
     try {
-      final response = await _apiService.get('/classrooms/random');
+      final response = await _apiService.get(
+        '/classrooms/random',
+        params: {if (lat != null) 'lat': lat, if (lng != null) 'lng': lng},
+      );
       if (response.data is Map<String, dynamic> &&
           response.data['classrooms'] is List) {
         final List<dynamic> jsonList =
