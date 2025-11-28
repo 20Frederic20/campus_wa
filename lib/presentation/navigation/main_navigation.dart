@@ -12,6 +12,7 @@ import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
 import 'package:campus_wa/presentation/screens/settings_screen.dart';
 import 'package:campus_wa/presentation/screens/under_development_screen.dart';
 import 'package:campus_wa/presentation/screens/welcome_screen.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,7 +85,7 @@ final GoRouter router = GoRouter(
         GoRoute(path: '/news', builder: (context, state) => const NewsScreen()),
         GoRoute(
           path: '/news/add',
-          builder: (context, state) => AddNewsScreen(),
+          builder: (context, state) => const AddNewsScreen(),
         ),
         GoRoute(
           path: ':splat(.*)',
@@ -109,100 +110,21 @@ class MainScaffold extends StatelessWidget {
       body: child,
       bottomNavigationBar: isWelcomeScreen
           ? null
-          : Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                child: NavigationBar(
-                  elevation: 0,
-                  backgroundColor: AppColors.secondaryGreen,
-                  indicatorColor: Colors.white.withOpacity(0.3),
-                  surfaceTintColor: Colors.transparent,
-
-                  labelBehavior:
-                      NavigationDestinationLabelBehavior.onlyShowSelected,
-
-                  labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((
-                    Set<WidgetState> states,
-                  ) {
-                    if (states.contains(WidgetState.selected)) {
-                      return const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
-                      );
-                    }
-                    return const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.white,
-                    );
-                  }),
-                  selectedIndex: _calculateSelectedIndex(location),
-                  onDestinationSelected: (index) =>
-                      _onItemTapped(context, index),
-                  destinations: [
-                    const NavigationDestination(
-                      icon: Icon(
-                        Icons.home_outlined,
-                        size: 22,
-                        color: AppColors.white,
-                      ),
-                      selectedIcon: Icon(
-                        Icons.home,
-                        size: 22,
-                        color: AppColors.white,
-                        shadows: [
-                          Shadow(blurRadius: 10.0, color: AppColors.white),
-                        ],
-                      ),
-                      label: 'Accueil',
-                    ),
-                    const NavigationDestination(
-                      icon: Icon(
-                        Icons.speaker_notes_outlined,
-                        size: 22,
-                        color: AppColors.white,
-                      ),
-                      selectedIcon: Icon(
-                        Icons.speaker_notes,
-                        size: 22,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(blurRadius: 10.0, color: Colors.white),
-                        ],
-                      ),
-                      label: 'Flash Info',
-                    ),
-                    const NavigationDestination(
-                      icon: Icon(
-                        Icons.settings_outlined,
-                        size: 22,
-                        color: AppColors.white,
-                      ),
-                      selectedIcon: Icon(
-                        Icons.settings,
-                        size: 22,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(blurRadius: 10.0, color: Colors.white),
-                        ],
-                      ),
-                      label: 'Paramètres',
-                    ),
-                  ],
-                ),
-              ),
+          : CurvedNavigationBar(
+              index: _calculateSelectedIndex(location),
+              height: 65.0,
+              items: const <Widget>[
+                Icon(Icons.home, size: 28, color: Colors.white),
+                Icon(Icons.speaker_notes, size: 28, color: Colors.white),
+                Icon(Icons.settings, size: 28, color: Colors.white),
+              ],
+              color: AppColors.secondaryGreen,
+              buttonBackgroundColor: AppColors.primaryGreen,
+              backgroundColor: Colors.transparent,
+              animationCurve: Curves.easeInOut,
+              animationDuration: const Duration(milliseconds: 300),
+              onTap: (index) => _onItemTapped(context, index),
+              letIndexChange: (index) => true,
             ),
     );
   }
