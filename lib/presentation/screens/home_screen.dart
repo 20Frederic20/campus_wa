@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<LatLng> _nearbyUniversities = [];
 
   Future<void> _getUserLocation() async {
+    if (!mounted) return;
     setState(() {
       _locationError = null;
     });
@@ -51,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
+        if (!mounted) return;
         setState(() {
           _locationError = 'Le service de localisation est désactivé.';
         });
@@ -61,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          if (!mounted) return;
           setState(() {
             _locationError = 'Permission de localisation refusée.';
           });
@@ -69,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       if (permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
         setState(() {
           _locationError = 'Permission de localisation refusée définitivement.';
         });
@@ -82,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .getIt<ClassroomRepository>()
           .getRandomClassrooms(lat: position.latitude, lng: position.longitude);
       final newPosition = LatLng(position.latitude, position.longitude);
+      if (!mounted) return;
       setState(() {
         _userPosition = newPosition;
         _classrooms = classrooms!;
@@ -100,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
             .getIt<ClassroomRepository>()
             .getRandomClassrooms();
 
+        if (!mounted) return;
         setState(() {
           _userPosition = defaultPosition;
           _classrooms = classrooms!;
@@ -108,11 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
               'Localisation non disponible sur cette plateforme. Position par défaut utilisée.';
         });
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           _locationError = 'Erreur lors de la récupération des salles: $e';
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _locationError = 'Erreur lors de la récupération de la position: $e';
       });
@@ -133,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
         (p) => p.longitude,
       );
 
+      if (!mounted) return;
       setState(() {
         _nearbyUniversities = _nearbyUniversities;
       });
@@ -152,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (existingIndex != -1) {
         // Exists: Scroll to it and expand
         _pageController.jumpToPage(existingIndex);
+        if (!mounted) return;
         setState(() {
           expandedIndex = existingIndex;
         });
@@ -163,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
             classroomId,
           );
           if (newClassroom != null) {
+            if (!mounted) return;
             setState(() {
               _classrooms.insert(0, newClassroom); // Add as first element
               expandedIndex = 0; // Expand the new one
@@ -195,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final universityClassrooms = await universityRepo
             .getUniversityClassrooms(universityId);
         if (universityClassrooms != null && universityClassrooms.isNotEmpty) {
+          if (!mounted) return;
           setState(() {
             _classrooms = universityClassrooms;
             expandedIndex = null;
@@ -229,10 +241,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final index = _classrooms.indexWhere((c) => c.id == updated.id);
     if (index != -1) {
+      if (!mounted) return;
       setState(() {
         _classrooms[index] = updated;
       });
     } else {
+      if (!mounted) return;
       setState(() {
         _classrooms.insert(0, updated);
       });
@@ -394,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const Gap(10),
-                const Icon(Icons.star_border, size: 32, color: AppColors.white),
+                // const Icon(Icons.star_border, size: 32, color: AppColors.white),
               ],
             ),
           ),
