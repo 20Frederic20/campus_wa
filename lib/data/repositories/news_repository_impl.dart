@@ -27,15 +27,17 @@ class NewsRepositoryImpl implements NewsRepository {
   }
 
   @override
-  Future<List<News>?> getNews(String? query) async {
+  Future<List<News>?> getNews({String? query}) async {
     try {
       final response = await _apiService.get(
         '/news',
         params: query != null ? {'search': query} : null,
       );
+
       if (response.data is Map<String, dynamic> &&
           response.data['news'] is List) {
         final List<dynamic> jsonList = response.data['news'] as List<dynamic>;
+
         final List<NewsDto> dtos = jsonList
             .map<NewsDto>(
               (dynamic j) => NewsDto.fromJson(j as Map<String, dynamic>),
@@ -44,6 +46,7 @@ class NewsRepositoryImpl implements NewsRepository {
         final List<News> domainList = dtos
             .map<News>((NewsDto d) => d.toDomain())
             .toList();
+
         await _newsLocalDatasource.cacheNews(dtos);
         return domainList;
       }

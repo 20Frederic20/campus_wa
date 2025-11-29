@@ -6,6 +6,7 @@ import 'package:campus_wa/presentation/screens/cgu_screen.dart';
 import 'package:campus_wa/presentation/screens/edit_classroom_screen.dart';
 import 'package:campus_wa/presentation/screens/help_center_screen.dart';
 import 'package:campus_wa/presentation/screens/home_screen.dart';
+import 'package:campus_wa/presentation/screens/news_detail_screen.dart';
 import 'package:campus_wa/presentation/screens/news_screen.dart';
 import 'package:campus_wa/presentation/screens/not_found_screen.dart';
 import 'package:campus_wa/presentation/screens/privacy_policy_screen.dart';
@@ -86,6 +87,17 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/news/add',
           builder: (context, state) => const AddNewsScreen(),
+        ),
+        GoRoute(
+          path: '/news/:id',
+          builder: (context, state) {
+            final news = state.extra;
+            if (news != null) {
+              return NewsDetailScreen(news: news as dynamic);
+            }
+            // If no news object passed, show error or fetch by ID
+            return const NotFoundScreen();
+          },
         ),
         GoRoute(
           path: ':splat(.*)',

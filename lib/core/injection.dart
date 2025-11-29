@@ -1,4 +1,5 @@
 import 'package:campus_wa/data/local/classroom_local_datasource_impl.dart';
+import 'package:campus_wa/data/local/news_local_datasource_impl.dart';
 import 'package:campus_wa/data/local/university_local_datasource_impl.dart';
 import 'package:campus_wa/data/repositories/claassroom_repository_impl.dart';
 import 'package:campus_wa/data/repositories/news_repository_impl.dart';
@@ -37,6 +38,7 @@ Future<void> setupDependencies() async {
     ..registerLazySingleton<ClassroomLocalDataSource>(
       ClassroomLocalDataSourceImpl.new,
     )
+    ..registerLazySingleton<NewsLocalDatasource>(NewsLocalDatasourceImpl.new)
     ..registerLazySingleton<SearchService>(
       () => SearchService(
         getIt<UniversityRepository>(),

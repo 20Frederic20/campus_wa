@@ -1,179 +1,156 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:gap/gap.dart';
 import 'package:campus_wa/domain/models/news.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewsCard extends StatelessWidget {
-  const NewsCard({
-    super.key,
-    required this.news,
-    this.isExpanded = false,
-    this.onTap,
-    this.onShare,
-    this.onBookmark,
-    this.onNewsUpdated,
-  });
-  final News news;
-  final bool isExpanded;
-  final VoidCallback? onTap;
-  final VoidCallback? onShare;
-  final VoidCallback? onBookmark;
-  final ValueChanged<News?>? onNewsUpdated;
+  const NewsCard({super.key, required this.news, this.onTap});
 
-  void _openFullScreenImage(
-    BuildContext context,
-    String imageUrl, {
-    String? heroTag,
-  }) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          backgroundColor: Colors.black,
-          appBar: AppBar(backgroundColor: Colors.transparent),
-          body: Center(
-            child: Hero(
-              tag: heroTag ?? imageUrl,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-                placeholder: (_, __) => const CircularProgressIndicator(),
-                errorWidget: (_, __, ___) =>
-                    const Icon(Icons.broken_image, color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  final News news;
+  final VoidCallback? onTap;
+
+  String _truncateContent(String? content, int maxLength) {
+    if (content == null || content.isEmpty) return '';
+    if (content.length <= maxLength) return content;
+    return '${content.substring(0, maxLength)}...';
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return DateFormat('dd MMM yyyy', 'fr_FR').format(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = news.filesUrls?.first;
-    return InkWell(
+    final imageUrl = (news.filesUrls != null && news.filesUrls!.isNotEmpty)
+        ? news.filesUrls!.first
+        : null;
+
+    return GestureDetector(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: title + date
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    news.title ?? '',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (news.publishedAt != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      news.publishedAt.toString(),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                    ),
-                  ),
-              ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            const Gap(8),
-
-            // Image (si présente)
-            if (imageUrl != null && imageUrl.isNotEmpty)
-              GestureDetector(
-                onTap: () => _openFullScreenImage(
-                  context,
-                  imageUrl,
-                  heroTag: 'news_${news.id}_img',
-                ),
-                child: Hero(
-                  tag: 'news_${news.id}_img',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      height: isExpanded ? 200 : 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: isExpanded ? 200 : 120,
-                        color: Colors.grey[300],
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        height: isExpanded ? 200 : 120,
-                        color: Colors.grey[200],
-                        child: const Center(child: Icon(Icons.broken_image)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image or placeholder
+              if (imageUrl != null && imageUrl.isNotEmpty)
+                CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 200,
+                    color: Colors.grey[200],
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 200,
+                    color: Colors.grey[100],
+                    child: Center(
+                      child: Icon(
+                        Icons.image_outlined,
+                        size: 64,
+                        color: Colors.grey[400],
                       ),
                     ),
                   ),
+                )
+              else
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.blue[400]!, Colors.blue[600]!],
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.article_outlined,
+                      size: 64,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
                 ),
-              ),
 
-            if (imageUrl != null && imageUrl.isNotEmpty) const Gap(8),
-
-            // Excerpt / contenu
-            if (isExpanded)
-              Text(
-                news.content ?? '',
-                style: Theme.of(context).textTheme.bodyMedium,
-                maxLines: 8,
-                overflow: TextOverflow.ellipsis,
-              )
-            else
-              Text(
-                'lol',
-                style: Theme.of(context).textTheme.bodySmall,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-            const Gap(12),
-
-            // Actions row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+              // Content section
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // IconButton(
-                    //   onPressed: onBookmark,
-                    //   icon: Icon(
-                    //     news.isBookmarked == true
-                    //         ? Icons.bookmark
-                    //         : Icons.bookmark_border,
-                    //   ),
-                    // ),
-                    IconButton(
-                      onPressed: onShare,
-                      icon: const Icon(Icons.share_outlined),
+                    // Content preview
+                    if (news.content != null && news.content!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          _truncateContent(news.content, 100),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[700], height: 1.5),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+
+                    // Title
+                    Text(
+                      news.title ?? 'Sans titre',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[900],
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Date
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 14,
+                          color: Colors.grey[500],
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _formatDate(news.publishedAt),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                TextButton.icon(
-                  onPressed: () async {
-                    final result = await Navigator.of(
-                      context,
-                    ).pushNamed('/news/${news.id}');
-                    if (result is News) {
-                      onNewsUpdated?.call(result);
-                    } else {
-                      onNewsUpdated?.call(null);
-                    }
-                  },
-                  icon: const Icon(Icons.open_in_new),
-                  label: Text(isExpanded ? 'Voir' : 'Ouvrir'),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

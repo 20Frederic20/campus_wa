@@ -43,14 +43,27 @@ class NewsDto {
   @JsonKey(name: 'content')
   final String? content;
 
-  @JsonKey(name: 'is_published')
+  @JsonKey(name: 'is_published', fromJson: _intToBool, toJson: _boolToInt)
   final bool? isPublished;
 
   @JsonKey(name: 'published_at')
   final DateTime? publishedAt;
 
-  @JsonKey(name: 'files_urls')
+  @JsonKey(name: 'files')
   final List<String>? filesUrls;
+
+  static bool? _intToBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value == '1' || value.toLowerCase() == 'true';
+    return null;
+  }
+
+  static int? _boolToInt(bool? value) {
+    if (value == null) return null;
+    return value ? 1 : 0;
+  }
 
   Map<String, dynamic> toJson() => _$NewsDtoToJson(this);
 
