@@ -6,6 +6,7 @@ import 'package:campus_wa/data/repositories/university_repository_impl.dart';
 import 'package:campus_wa/data/services/api_service.dart';
 import 'package:campus_wa/data/services/search_service.dart';
 import 'package:campus_wa/domain/local/classroom_local_datasource.dart';
+import 'package:campus_wa/domain/local/news_local_datasource.dart';
 import 'package:campus_wa/domain/local/university_local_datasource.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
 import 'package:campus_wa/domain/repositories/news_repository.dart';
@@ -56,6 +57,9 @@ Future<void> setupDependencies() async {
       ),
     )
     ..registerLazySingleton<NewsRepository>(
-      () => NewsRepositoryImpl(apiService: getIt<ApiService>()),
+      () => NewsRepositoryImpl(
+        apiService: getIt<ApiService>(),
+        newsLocal: getIt<NewsLocalDatasource>(),
+      ),
     );
 }

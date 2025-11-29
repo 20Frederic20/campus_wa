@@ -16,7 +16,6 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
 
   final ApiService _apiService;
   final ClassroomLocalDataSource _classroomLocal;
-  final Map<String, Classroom> _classroomCache = {};
 
   // Helper : est-ce une erreur réseau ?
   bool _isNetworkError(DioException e) {
@@ -63,10 +62,15 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       final response = await _apiService.post('/classrooms', data: formData);
 
       if (response.data is Map && response.data['classroom'] is Map) {
-        final createdClassroom = ClassroomDto.fromJson(
-          response.data['classroom'],
-        ).toDomain();
-        _classroomCache[createdClassroom.id] = createdClassroom;
+        final classroomDto = ClassroomDto.fromJson(response.data['classroom']);
+        final createdClassroom = classroomDto.toDomain();
+
+        // Mettre en cache la nouvelle classroom
+        await _classroomLocal.cacheClassroomById(
+          createdClassroom.id,
+          classroomDto,
+        );
+
         return createdClassroom;
       }
       throw Exception(
@@ -89,9 +93,6 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   @override
   Future<Classroom?> getClassroomById(String id) async {
     try {
-      if (_classroomCache.containsKey(id)) {
-        return _classroomCache[id]!;
-      }
       final response = await _apiService.get('/classrooms/$id');
       if (response.data is Map && response.data['classroom'] is Map) {
         final classroom = ClassroomDto.fromJson(response.data['classroom']);
@@ -125,10 +126,6 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         lat: classroom.lat,
       );
 
-      if (_classroomCache.containsKey(id)) {
-        _classroomCache.remove(id);
-      }
-
       final FormData formData = FormData.fromMap({
         ...dto.toJson(),
         '_method': 'PUT', // Important pour les mises à jour
@@ -154,10 +151,12 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       );
 
       if (response.data is Map && response.data['classroom'] is Map) {
-        final updatedClassroom = ClassroomDto.fromJson(
-          response.data['classroom'],
-        ).toDomain();
-        _classroomCache[id] = updatedClassroom;
+        final classroomDto = ClassroomDto.fromJson(response.data['classroom']);
+        final updatedClassroom = classroomDto.toDomain();
+
+        // Mettre à jour les caches
+        await _classroomLocal.cacheClassroomById(id, classroomDto);
+
         return updatedClassroom;
       }
       throw Exception(
@@ -204,12 +203,22 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
         final List<Classroom> domainList = dtos
             .map<Classroom>((ClassroomDto d) => d.toDomain())
             .toList();
+
+        // Mettre en cache les classrooms
+        await _classroomLocal.cacheClassrooms(dtos);
+
         return domainList;
       }
       return null;
     } on DioException catch (e) {
-      if (_isNetworkError(e)) return null;
-      rethrow;
+      if (_isNetworkError(e)) {
+        // Fallback vers le cache en cas d'erreur réseau
+        final cachedClassrooms = await _classroomLocal.getCachedClassrooms();
+        if (cachedClassrooms != null) {
+          return cachedClassrooms.map((c) => c.toDomain()).toList();
+        }
+      }
+      return null;
     }
   }
 

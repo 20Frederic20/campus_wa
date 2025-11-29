@@ -23,10 +23,6 @@ class UniversityRepositoryImpl implements UniversityRepository {
   final UniversityLocalDataSource _universityLocal;
   final ClassroomLocalDataSource _classroomLocal;
 
-  // Cache mémoire (pour getById rapide)
-  final Map<String, University> _universityCache = {};
-  final Map<String, Classroom> _classroomCache = {};
-
   // Helper : est-ce une erreur réseau ?
   bool _isNetworkError(DioException e) {
     return e.type == DioExceptionType.connectionTimeout ||
@@ -53,10 +49,11 @@ class UniversityRepositoryImpl implements UniversityRepository {
         data: dto.toJson(),
       );
       if (response.data is Map && response.data['university'] is Map) {
-        final created = UniversityDto.fromJson(
+        final universityDto = UniversityDto.fromJson(
           response.data['university'],
-        ).toDomain();
-        _universityCache[created.id] = created;
+        );
+        final created = universityDto.toDomain();
+
         // Mise à jour cache local (rafraîchir liste)
         final remoteList = await getUniversities(); // ignore fallback ici
         if (remoteList != null) {
@@ -103,10 +100,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
             .toList();
         final domainList = dtos.map((d) => d.toDomain()).toList();
 
-        // Cache mémoire + persistant
-        for (final u in domainList) {
-          _universityCache[u.id] = u;
-        }
+        // Cache persistant
         await _universityLocal.cacheUniversities(dtos);
 
         return domainList;
@@ -120,11 +114,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
         // Fallback local
         final cachedDtos = await _universityLocal.getCachedUniversities();
         if (cachedDtos == null) return null;
-        final domainList = cachedDtos.map((d) => d.toDomain()).toList();
-        for (final u in domainList) {
-          _universityCache[u.id] = u;
-        }
-        return domainList;
+        return cachedDtos.map((d) => d.toDomain()).toList();
       }
       throw ApiException(
         message: 'Erreur réseau: ${e.message}',
@@ -137,17 +127,12 @@ class UniversityRepositoryImpl implements UniversityRepository {
 
   @override
   Future<University?> getUniversityById(String id) async {
-    if (_universityCache.containsKey(id)) {
-      return _universityCache[id];
-    }
-
     try {
       final response = await _apiService.get('/universities/$id');
       if (response.data is Map && response.data['university'] is Map) {
         final university = UniversityDto.fromJson(
           response.data['university'],
         ).toDomain();
-        _universityCache[id] = university;
         return university;
       }
       return null;
@@ -181,9 +166,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
           .toList();
       final domainList = dtos.map((d) => d.toDomain()).toList();
 
-      for (final c in domainList) {
-        _classroomCache[c.id] = c;
-      }
+      // Cache persistant
       await _classroomLocal.cacheClassroomsByUniversityId(universityId, dtos);
 
       return domainList;
@@ -192,11 +175,7 @@ class UniversityRepositoryImpl implements UniversityRepository {
         final cachedDtos = await _classroomLocal
             .getCachedClassroomsByUniversityId(universityId);
         if (cachedDtos == null) return null;
-        final domainList = cachedDtos.map((d) => d.toDomain()).toList();
-        for (final c in domainList) {
-          _classroomCache[c.id] = c;
-        }
-        return domainList;
+        return cachedDtos.map((d) => d.toDomain()).toList();
       }
       rethrow;
     }
