@@ -28,7 +28,7 @@ class ClassroomCard extends StatelessWidget {
 
   List<String> get _allImages {
     final List<String> images = [];
-    images.add(classroom.mainImage!);
+    images.add(classroom.mainImage);
     images.addAll(
       classroom.annexesImages ?? [],
     ); // Assuming annexesImages is List<String>?

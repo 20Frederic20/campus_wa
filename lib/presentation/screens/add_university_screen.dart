@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:campus_wa/core/injection.dart' as di;
 import 'package:campus_wa/domain/models/university.dart';
 import 'package:campus_wa/domain/repositories/university_repository.dart';
-import 'package:campus_wa/core/injection.dart' as di;
+import 'package:flutter/material.dart';
 
 class AddUniversityScreen extends StatefulWidget {
   const AddUniversityScreen({super.key});

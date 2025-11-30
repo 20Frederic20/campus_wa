@@ -53,6 +53,7 @@ class _NewsScreenState extends State<NewsScreen> {
               scrollDirection: Axis.vertical,
               controller: PageController(viewportFraction: 0.7),
               itemCount: _news.length,
+              padEnds: false,
               itemBuilder: (context, index) {
                 final news = _news[index];
                 return NewsCard(

@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditClassroomScreen extends StatefulWidget {
-  const EditClassroomScreen({Key? key, required this.classroomId})
-    : super(key: key);
+  const EditClassroomScreen({super.key, required this.classroomId});
   final String classroomId;
 
   @override

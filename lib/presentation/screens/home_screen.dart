@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_wa/core/injection.dart' as di;
-import 'package:campus_wa/core/theme/app_theme.dart';
 import 'package:campus_wa/core/utils/map_utils.dart';
 import 'package:campus_wa/domain/models/classroom.dart';
 import 'package:campus_wa/domain/repositories/classroom_repository.dart';
